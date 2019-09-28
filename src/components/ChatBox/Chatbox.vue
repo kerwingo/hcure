@@ -7,7 +7,9 @@
         <span class="close" v-show="closeDialog" @click="closeDialog"></span>
       </div>
       <div class="chatBox-main">
-        <div class="main-box">消息框</div>
+        <div class="main-box">
+          <im></im>
+        </div>
         <div class="aside-box">
           <div class="history" @click="openInnerDialog">
             <img src="@/static/img/history.png" alt="">
@@ -36,12 +38,14 @@
 
 <script>
 import pagination from '@/components/pagination/pagination'
+import Im from '@/components/Im/Im'
 import prescription from '@/components/Prescription/Prescription'
 import { offlineinterrogation } from '@/axios/api'
 export default {
   components: {
     pagination: pagination,
-    prescription: prescription
+    prescription: prescription,
+    im: Im
   },
   data () {
     return {
@@ -118,6 +122,7 @@ export default {
     }
     .chatBox-main{
       display: flex;
+      justify-content: flex-start;
       .main-box{
         width: 800px;
       }

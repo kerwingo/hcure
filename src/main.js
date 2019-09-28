@@ -7,8 +7,9 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'babel-polyfill'
-import {store} from './store/store'
+import store from './store'
 import moment from 'moment'
+import '@/styles/index.less' // global css
 Vue.use(Vuex)
 Vue.use(ElementUI)
 /* eslint-disable no-new */

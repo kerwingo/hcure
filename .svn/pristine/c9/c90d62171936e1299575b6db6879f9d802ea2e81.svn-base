@@ -1,0 +1,92 @@
+<template>
+  <div class="userInfo">
+    <div class="info-top">
+      <el-row gutter="20">
+        <el-col :span="4" class="profile">
+          <img src="../../../static/img/doctor.png" alt width="82px" />
+        </el-col>
+        <el-col :span="20" class="content" >
+          <el-row>
+            <el-col :span="12">
+              <div>
+                <span>姓名：</span>
+                <span>{{list.name}}</span>
+              </div>
+            </el-col>
+            <el-col :span="12">
+              <div>
+                <span>性别：</span>
+                <span>{{list.sex}}</span>
+              </div>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <div>
+                <span>所属医疗机构：</span>
+                <span>{{list.hospital}}</span>
+              </div>
+            </el-col>
+            <el-col :span="6">
+              <div>
+                <span>科室：</span>
+                <span>{{list.department}}</span>
+              </div>
+            </el-col>
+            <el-col :span="6">
+              <div>
+                <span>职位：</span>
+                <span>{{list.position}}</span>
+              </div>
+            </el-col>
+          </el-row>
+        </el-col>
+      </el-row>
+      <div class="info-box">
+          
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "",
+  components: {},
+  data() {
+    return {
+      list: ""
+    };
+  }
+};
+</script>
+
+<style scoped lang="less">
+.userInfo {
+  background: #fff;
+  height: 100%;
+  box-shadow: 0px 0px 13px 0px rgba(223, 230, 234, 0.57);
+  padding: 30px;
+  box-sizing: border-box;
+  .profile {
+    background: rgba(238, 238, 238, 1);
+    border-radius: 5px;
+    width:130px;
+    height:150px;
+    display: flex;
+    justify-content: center;
+    align-items: center
+  }
+  .content{
+      background:rgba(238,238,238,1);
+      text-align:left;
+      height: 150px;
+      box-sizing: border-box;
+      padding: 20px 40px;
+      margin-left: 14px;
+      .el-row {
+          line-height: 55px;
+      }
+  }
+}
+</style>

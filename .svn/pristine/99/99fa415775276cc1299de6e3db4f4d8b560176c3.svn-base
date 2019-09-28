@@ -1,0 +1,223 @@
+<template>
+  <div class="userInfo">
+    <div class="info-top">
+      <el-row>
+        <el-col :span="4" class="profile">
+          <img src="../../../static/img/doctor.png" alt width="82px" />
+        </el-col>
+        <el-col :span="20" class="content">
+          <el-row>
+            <el-col :span="12">
+              <div>
+                <span>姓名：</span>
+                <span>{{list.name}}</span>
+              </div>
+            </el-col>
+            <el-col :span="12">
+              <div>
+                <span>性别：</span>
+                <span>{{list.sex}}</span>
+              </div>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="12">
+              <div>
+                <span>所属医疗机构：</span>
+                <span>{{list.hospital}}</span>
+              </div>
+            </el-col>
+            <el-col :span="6">
+              <div>
+                <span>科室：</span>
+                <span>{{list.department}}</span>
+              </div>
+            </el-col>
+            <el-col :span="6">
+              <div>
+                <span>职位：</span>
+                <span>{{list.position}}</span>
+              </div>
+            </el-col>
+          </el-row>
+        </el-col>
+      </el-row>
+    </div>
+    <div class="info-box">
+      <div class="item-box">
+        <p class="tit">擅长：</p>
+        <div class="text bor">{{textSc}}</div>
+        <p class="change" @click="openDialog('sc')">修改</p>
+      </div>
+      <div class="item-box">
+        <p class="tit">个人简介：</p>
+        <div class="text bor">{{textIntroduction}}</div>
+        <p class="change" @click="openDialog('jj')">修改</p>
+      </div>
+      <div class="item-box">
+        <p class="tit">手写签名</p>
+        <div class="img">
+          <img src alt />
+        </div>
+      </div>
+      <div class="item-box">
+        <p class="tit">标签</p>
+        <div class="text">
+          <p class="change right" @click="openDialog('bq')">修改</p>
+          <el-checkbox-group v-model="checkedCities" :min="1" :max="2">
+            <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
+          </el-checkbox-group>
+        </div>
+      </div>
+    </div>
+    <el-dialog
+      :title="dialogTit"
+      :visible.sync="dialogVisible"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="textarea"></el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+const cityOptions = [
+  "严谨求精",
+  "热情耐心",
+  "熟知各种药品功效",
+  "视病人为亲人",
+  "仁德俱全",
+  "人和心诚",
+  "病人至上",
+  "擅长联合用药"
+];
+export default {
+  name: "",
+  components: {},
+  data() {
+    return {
+      list: "",
+      checkedCities: ["严谨求精"],
+      cities: cityOptions,
+      textarea: "",
+      dialogTit: "请输入",
+      dialogVisible: false,
+      textSc: "画画",
+      textIntroduction: "人民医院"
+    };
+  },
+  methods: {
+    //打开弹窗
+    openDialog(arg) {
+      this.dialogVisible = true;
+      if (arg == "sc") {
+        this.dialogTit = "擅长：";
+      } else if (arg == "jj") {
+        this.dialogTit = "个人简介：";
+      } else if (arg == "bq") {
+        this.dialogTit = "标签：";
+      }
+    },
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then(_ => {
+          done();
+        })
+        .catch(_ => {});
+    }
+  }
+};
+</script>
+
+<style scoped lang="less">
+@tit_width: 100px;
+.userInfo {
+  background: #fff;
+  height: 100%;
+  box-shadow: 0px 0px 13px 0px rgba(223, 230, 234, 0.57);
+  padding: 30px;
+  box-sizing: border-box;
+  text-align: left;
+  .profile {
+    background: rgba(238, 238, 238, 1);
+    border-radius: 5px;
+    width: 130px;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .content {
+    background: rgba(238, 238, 238, 1);
+    text-align: left;
+    height: 150px;
+    box-sizing: border-box;
+    padding: 20px 40px;
+    margin-left: 14px;
+    .el-row {
+      line-height: 55px;
+    }
+  }
+  .info-box {
+    padding-top: 65px;
+    .item-box {
+      margin-bottom: 45px;
+      clear: both;
+      overflow: hidden;
+      * {
+        float: left;
+      }
+      .tit {
+        min-width: @tit_width;
+        float: left;
+        color: rgba(51, 51, 51, 1);
+      }
+      .text {
+        min-width: 496px;
+        min-height: 90px;
+        max-width: calc(100% - @tit_width);
+        box-sizing: border-box;
+        padding: 10px;
+        &.bor {
+          border: 1px solid rgba(210, 210, 210, 1);
+        }
+        .el-checkbox-group {
+          margin-top: 10px;
+          .el-checkbox {
+            margin-bottom: 10px;
+            .el-checkbox__label {
+              font-size: 16px;
+            }
+          }
+        }
+      }
+      .img {
+        width: 180px;
+        height: 120px;
+        border: 1px dashed red;
+      }
+      .change {
+        margin-left: 20px;
+        color: rgba(170, 170, 170, 1);
+        cursor: pointer;
+        &.right {
+          float: right;
+          position: relative;
+          top: -10px;
+          right: 50px;
+        }
+      }
+    }
+  }
+  .el-dialog__wrapper {
+    .el-textarea__inner {
+      min-height: 200px !important;
+    }
+  }
+}
+</style>

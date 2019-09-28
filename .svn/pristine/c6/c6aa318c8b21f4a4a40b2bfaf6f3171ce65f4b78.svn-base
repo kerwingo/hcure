@@ -1,0 +1,8 @@
+import axios from '../axios/index'
+export function login (data = {}) { // 登录
+  return axios({
+    url: 'auth/login',
+    method: 'post',
+    data
+  })
+}

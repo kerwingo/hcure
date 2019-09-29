@@ -29,7 +29,7 @@
     <div class="innerDialog-wrap" v-show="innerDialogVisible">
         <div class="innerDialog">
             <span class="close" @click="closeInnerDialog"></span>
-            <prescription></prescription>
+            <prescription @closeInnerDialog = "closeInnerDialog"></prescription>
         </div>
     </div>
   </div>
@@ -145,7 +145,7 @@ export default {
     background: #F2F2F2;
     position: absolute;
     z-index: 10;
-    width: 60%;
+    width: 76%;
     height: 85%;
     overflow-y: scroll;
     left: 50%;

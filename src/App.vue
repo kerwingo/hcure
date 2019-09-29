@@ -11,10 +11,7 @@ export default {
 
 <style lang="less">
   @import "../src/common/less/public";
-  *{
-    margin: 0 auto;
-    padding: 0;
-  }
+  @import "../src/common/less/reset";
   .el-message .el-icon-error{
     margin: 0;
     margin-right: 15px;

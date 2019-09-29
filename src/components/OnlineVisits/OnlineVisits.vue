@@ -113,7 +113,6 @@ export default {
 }
 </script>
 <style scoped lang="less">
-  @import "../../common/less/public";
   .visit-top {
     display: flex;
     justify-content:space-between;

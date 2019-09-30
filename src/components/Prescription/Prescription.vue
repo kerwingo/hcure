@@ -2,7 +2,8 @@
   <div id="prescription">
     <div class="prescription" >
       <div class="main">
-        <h3>历史问诊处方签</h3>
+        <h3 class="p-tit">历史问诊处方签</h3>
+        <p class="line"></p>
         <div class="case-info">
           <span>患者姓名：张三</span>
           <span>患者性别：男</span>
@@ -29,15 +30,24 @@
           <el-col :span="6"><div class="tit"><span style="display: inline-block;color: red;font-weight: bold;font-size: 20px;position: relative;top: 5px;margin-right: 3px;">*</span>临床诊断：</div></el-col>
           <el-col :span="18">
             <div class="tags">
-              <el-tag
-                v-for="(tag,index) in dynamicTags"
-                :key="tag+index"
-                :closable = "closable"
-                :disable-transitions="false"
-                @close="handleClose(tag)"
-              >
-                {{tag}}
-              </el-tag>
+              <div>
+                <el-tag
+                  v-for="(tag,index) in dynamicTags"
+                  :key="tag+index"
+                  :closable = "closable"
+                  :disable-transitions="false"
+                  @close="handleClose(tag)"
+                >
+                  {{tag}}
+                </el-tag>
+              </div>
+              <div class="operations">
+                  <div class="btns">
+                      <span class="clear">清空</span>
+                      <span class="add" @click="openPanel">新增</span>
+                  </div>
+                  <p class="limit">10个标签以内</p>
+              </div>
             </div>
           </el-col>
         </el-row>
@@ -182,10 +192,7 @@
                   style="width: 100%">
                   <el-table-column label="" width="">
                     <template slot-scope="scope">
-                      <el-button
-                        size="mini"
-                        type="danger"
-                        @click.native.prevent="deleteRow(scope.$index, tableData)">删除</el-button>
+                      <i data-v-77b9088f="" class="el-icon-delete" @click.native.prevent="deleteRow(scope.$index, tableData)"></i>
                     </template>
                   </el-table-column>
                   <el-table-column
@@ -245,8 +252,8 @@
     <div class="history">
       <div class="main">
         <el-row class="text-item">
-          <el-col :span="6"><div class="tit" ><span style="display: inline-block;color: red;font-weight: bold;font-size: 20px;position: relative;top: 5px;margin-right: 3px;">*</span> 医嘱：</div></el-col>
-          <el-col :span="18">
+          <el-col :span="5"><div class="tit" ><span style="display: inline-block;color: red;font-weight: bold;font-size: 20px;position: relative;top: 5px;margin-right: 3px;">*</span> 医嘱：</div></el-col>
+          <el-col :span="19">
             <el-input
               type="textarea"
               :rows="5"
@@ -260,8 +267,8 @@
           </el-col>
         </el-row>
         <el-row class="text-item history-main">
-          <el-col :span="6"><div class="tit">历史诊断记录：</div></el-col>
-          <el-col :span="18">
+          <el-col :span="5"><div class="tit">历史诊断记录：</div></el-col>
+          <el-col :span="19">
             <div class="history-list">
                 <ul>
                   <li v-for="(item,index) in historyList" :key="'ill_history'+index"><span style="margin-right: 20px">{{item.date}}</span>{{item.text}}</li>
@@ -276,14 +283,23 @@
         <span class="cancel" @click="cancel">取消</span>
         <span class="print" @click="printHtmlCustomStyle">确定并打印</span>
     </div>
+    <InfoPanel ref="InfoPanel"></InfoPanel>
   </div>
 </template>
 <script>
 import pagination from '@/components/pagination/pagination'
+import InfoPanel from '@/components/Prescription/InfoPanel'
 import printJS from 'print-js'
 export default {
   components: {
-    pagination: pagination
+    pagination: pagination,
+    InfoPanel: InfoPanel
+  },
+  props: {
+    closable: {
+      type: Boolean,
+      default: true
+    }
   },
   data () {
     return {
@@ -291,7 +307,6 @@ export default {
       dialogVisible: false,
       innerDialogVisible: false,
       medicalHistory: '海末次综合症',
-      closable: false,
       readonly: false,
       dynamicTags: [
         '***诊断',
@@ -432,6 +447,10 @@ export default {
     deleteRow (index, rows) {
       rows.splice(index, 1)
     },
+    openPanel () {
+      this.$refs.InfoPanel.displayPanel(true);
+
+    },
     printHtmlCustomStyle () {
       const style = '@page { margin: 0 } @media print { h1 { color: blue } }'// 直接写样式
       printJS({
@@ -449,140 +468,206 @@ export default {
 }
 </script>
 <style scoped lang="less">
-  .prescription {
-    padding: 20px 0;
-    background:rgba(255,255,255,1);
-    box-shadow:0px 0px 13px 0px rgba(223,230,234,0.57);
-    &>.main{
-      width: 70%;
-      margin: 0 auto;
-      .case-info {
-        display: flex;
-        justify-content: space-between;
-        padding: 30px 0px;
+.prescription {
+  padding: 30px 0 30px 0;
+  background:rgba(255,255,255,1);
+  box-shadow:0px 0px 13px 0px rgba(223,230,234,0.57);
+  .p-tit {
+    font-size: 32px;
+    font-weight: bold;
+  }
+  .line {
+    width: 100%;
+    margin: 40px auto 20px;
+    border-bottom: 2px dashed #333333;
+  }
+  .case-info{
+    font-size: 22px;
+  }
+  &>.main{
+    width: 70%;
+    min-width: 1000px;
+    margin: 0 auto;
+    .case-info {
+      display: flex;
+      justify-content: space-between;
+      padding: 30px 0px;
+    }
+    .text-item {
+      margin: 30px 0 0 0 ;
+      .tit {
+        text-align: right;
+        font-size: 22px;
+        line-height: 30px;
+        margin-right: 10px;
       }
-      .text-item {
-        margin: 30px 0 0 0 ;
-        .tit {
-          text-align: right;
-        }
-        .tags{
-          border:1px solid rgba(210,210,210,1);
-          border-radius:3px;
-          min-height: 150px;
-          text-align: left;
-          padding: 15px;
-          .el-tag {
-            background:rgba(238,238,238,1);
-            color: #565656;
-            margin: 0 20px 0 0;
-            .el-tag__close {
-              color: #999999;
-              border: 1px solid #999999;
-              border-radius: 50%;
+      .tags{
+        border:1px solid rgba(210,210,210,1);
+        border-radius:3px;
+        min-height: 204px;
+        text-align: left;
+        padding: 15px;
+        display: flex;
+        flex-flow: column;
+        justify-content: space-between;
+        .el-tag {
+          background:rgba(238,238,238,1);
+          color: #565656;
+          margin: 0 20px 20px 0;
+          width: 135px;
+          height: 50px;
+          box-sizing: border-box;
+          text-align: center;
+          line-height: 50px;
+          font-size: 18px;
+          .el-tag__close {
+            color: #999999;
+            border: 1px solid #999999;
+            border-radius: 50%;
+            transition: 0.3s;
+            &:hover {
+              background:rgba(238,238,238,1);
+              transform:rotate(90deg);
               transition: 0.3s;
-              &:hover {
-                background:rgba(238,238,238,1);
-                transform:rotate(90deg);
-                transition: 0.3s;
+            }
+          }
+        }
+        .operations{
+          margin-top: 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          .btns {
+            text-align: center;
+            span{
+              display: inline-block;
+              width:130px;
+              height:50px;
+              font-size:20px;
+              line-height:50px;
+              margin-right: 10px;
+              border-radius:3px;
+              cursor: pointer;
+              &.clear{
+                background:rgba(242,242,242,1);
+                color:rgba(170,170,170,1);
+              }
+              &.add {
+                background:rgba(67,190,127,1);
+                color:#fff;
               }
             }
           }
+          .limit {
+            color: #AAAAAA;
+            font-size:20px;
+          }
         }
       }
     }
+  }
 
-  }
-  .medical {
-    padding: 10px 0;
-    .tabs-wrap {
-      text-align: left;
-      .tabs {
-        border-radius: 25px;
-        overflow: hidden;
+}
+.medical {
+  padding: 10px 0;
+  .tabs-wrap {
+    text-align: left;
+    .tabs {
+      border-radius: 25px;
+      overflow: hidden;
+      display: inline-block;
+      margin: 10px 0;
+      li {
+        text-align: center;
         display: inline-block;
-        margin: 10px 0;
-        li {
-          text-align: center;
-          display: inline-block;
-          width:150px;
-          height:40px;
-          line-height: 40px;
-          color: #565656;
-          background:#fff;
-          box-shadow:0px 0px 13px 0px rgba(223,230,234,0.57);
-          cursor: pointer;
-          &.active{
-            background:rgba(67,190,127,1);
-            color: #fff;
-          }
+        width:150px;
+        height:50px;
+        line-height: 50px;
+        color: #565656;
+        background:#fff;
+        box-shadow:0px 0px 13px 0px rgba(223,230,234,0.57);
+        cursor: pointer;
+        font-size: 22px;
+        transition: 0.3s ease-in-out;
+        &.active{
+          background:rgba(67,190,127,1);
+          color: #fff;
+          transition: 0.3s ease-in-out;
         }
       }
-      .tabs-block{
-        box-shadow:0px -1px 9px 0px rgba(234,234,234,1);
-        border-radius:3px 3px 0px 0px;
-        .divTab {
-          .change{
-            color: #fff;
-            height:45px;
-            line-height: 45px;
-            background:rgba(67,190,127,1);
-            border-radius:3px;
-            width:180px;
-            text-align: center;
-            margin: 20px auto;
-            cursor: pointer;
-          }
+    }
+    .tabs-block{
+      box-shadow:0px -1px 9px 0px rgba(234,234,234,1);
+      border-radius:3px 3px 0px 0px;
+      .divTab {
+        .change{
+          color: #fff;
+          height:45px;
+          line-height: 45px;
+          background:rgba(67,190,127,1);
+          border-radius:3px;
+          width:180px;
+          text-align: center;
+          margin: 20px auto;
+          cursor: pointer;
         }
-        .tcmTab {
-          display: flex;
-          width: 100%;
-          overflow-x: scroll;
-          justify-content: space-between;
-          flex-wrap: wrap;
-          .tcmData{
-            margin: 10px;
-            box-shadow:0px -1px 9px 0px rgba(234,234,234,1);
-          }
+      }
+      .tcmTab {
+        display: flex;
+        width: 100%;
+        overflow-x: scroll;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        .tcmData{
+          margin: 10px;
+          box-shadow:0px -1px 9px 0px rgba(234,234,234,1);
         }
-        .handleWrite{
+      }
+      .handleWrite{
+        display: flex;
+        justify-content: space-between;
+        background: #fff;
+        padding: 20px 10px;
+        box-sizing: border-box;
+        li {
           display: flex;
           justify-content: space-between;
-          background: #fff;
-          padding: 20px 10px;
-          box-sizing: border-box;
-          li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            span{
-              display: inline-block;
-              min-width: 90px;
-            }
+          align-items: center;
+          span{
+            display: inline-block;
+            min-width: 90px;
           }
         }
       }
     }
   }
+}
 .history{
   background:rgba(255,255,255,1);
   box-shadow:0px 0px 13px 0px rgba(223,230,234,0.57);
-  padding: 20px 0;
+  padding: 40px 0;
   &>.main{
     width: 70%;
+    min-width: 1000px;
     margin: 0 auto;
+    .tit {
+      font-size: 22px;
+      line-height: 50px;
+      text-align: right;
+    }
     .history-main {
       margin-top: 60px;
       .history-list{
         border:1px solid rgba(210,210,210,1);
         border-radius:3px;
         li {
-          height: 50px;
+          height: 66px;
           border-bottom:1px solid rgba(210,210,210,1);
-          line-height: 50px;
+          line-height: 66px;
           text-align: left;
           box-sizing: border-box;
           padding: 0 10px;
+          font-size: 22px;
           &:last-child{
             border: 0;
           }
@@ -591,28 +676,27 @@ export default {
     }
   }
 }
-  .operation {
-    padding: 30px 0 30px 0;
-    span {
-      display: inline-block;
-      margin: 0 20px;
-      height:50px;
-      line-height: 50px;
-      text-align: center;
-      padding: 0 20px;
-      border-radius:3px;
-      min-width: 100px;
-      cursor: pointer;
-      &.cancel{
-        color: #565656;
-        background:rgba(229,229,229,1);
-      }
-      &.print{
-        color: #fff;
-        background:rgba(67,190,127,1);
-      }
+.operation {
+  padding: 35px 0 40px 0;
+  span {
+    display: inline-block;
+    height:50px;
+    line-height: 50px;
+    text-align: center;
+    border-radius:3px;
+    min-width: 100px;
+    cursor: pointer;
+    margin: 0 27px;
+    &.cancel{
+      color: #565656;
+      background:rgba(229,229,229,1);
+    }
+    &.print{
+      color: #fff;
+      background:rgba(67,190,127,1);
     }
   }
+}
 </style>
 <style type="text/css">
   .el-table--enable-row-transition .el-table__body td{
@@ -633,5 +717,21 @@ export default {
   }
   .el-pagination.is-background .el-pager li:not(.disabled).active{
     background:rgba(67,190,127,1);
+  }
+   .el-textarea__inner{
+    font-size: 20px;
+  }
+  .el-table .cell{
+    font-size: 18px;
+  }
+  .el-table th>.cell{
+    font-size: 18px;
+  }
+  .el-tag .el-tag__close{
+    color: #999;
+  }
+  .el-tag .el-tag__close:hover {
+    color: #FFF;
+    background-color: #999;
   }
 </style>

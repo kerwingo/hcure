@@ -145,14 +145,16 @@ export default {
     background: #F2F2F2;
     position: absolute;
     z-index: 10;
-    width: 76%;
-    height: 85%;
+    width: 80%;
+    min-width: 1300px;
+    height:100%;
     overflow-y: scroll;
     left: 50%;
     top: 50%;
     padding: 30px 0 30px 15px;
     transform: translate(-50%,-50%);//IE8不支持
     .innerDialog {
+      position: relative;
       .close {
         display: inline-block;
         width: 40px;

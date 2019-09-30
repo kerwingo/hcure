@@ -34,8 +34,9 @@ axios.interceptors.response.use(response => { // 报错统一处理
       message: response.data.message,
       type: 'warning'
     })
+  } else {
+    return response
   }
-  return response
 }, error => {
   if (error.response.status == 401) { // 401 的处理
     Message({

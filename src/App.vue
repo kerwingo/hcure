@@ -20,7 +20,7 @@ export default {
     min-width: 200px;
   }
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: SourceHanSansCN;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

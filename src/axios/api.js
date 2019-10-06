@@ -57,3 +57,10 @@ export function updateintroduce (data) { // 修改医生个人简介
     data
   })
 }
+export function getDiagdescs (data) { // 获取临床诊断
+  return axios({
+    url: 'diagdescs/page',
+    method: 'get',
+    data
+  })
+}

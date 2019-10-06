@@ -44,7 +44,7 @@
               <div class="operations">
                   <div class="btns">
                       <span class="clear">清空</span>
-                      <span class="add" @click="openPanel">新增</span>
+                      <span class="add" @click="openPanel('zd',true)">新增</span>
                   </div>
                   <p class="limit">10个标签以内</p>
               </div>
@@ -182,6 +182,9 @@
                 </template>
               </el-table-column>
             </el-table>
+            <div class="add-item" @click="openPanel('xy',true)">
+                <i class="el-icon-circle-plus-outline"></i><span>添加项目</span>
+            </div>
           </div>
           <div class="divTab" v-show="nowIndex===1">
             <div class="tcmTab">
@@ -447,9 +450,8 @@ export default {
     deleteRow (index, rows) {
       rows.splice(index, 1)
     },
-    openPanel () {
-      this.$refs.InfoPanel.displayPanel(true);
-
+    openPanel (type, display) {
+      this.$refs.InfoPanel.displayPanel(type, display)
     },
     printHtmlCustomStyle () {
       const style = '@page { margin: 0 } @media print { h1 { color: blue } }'// 直接写样式
@@ -600,6 +602,17 @@ export default {
       box-shadow:0px -1px 9px 0px rgba(234,234,234,1);
       border-radius:3px 3px 0px 0px;
       .divTab {
+        .add-item {
+          height:70px;
+          background:rgba(255,255,255,1);
+          font-size:18px;
+          color:rgba(67,190,127,1);
+          line-height:70px;
+          cursor: pointer;
+          i {
+            margin: 0 5px 0 30px;
+          }
+        }
         .change{
           color: #fff;
           height:45px;
@@ -619,7 +632,7 @@ export default {
         justify-content: space-between;
         flex-wrap: wrap;
         .tcmData{
-          margin: 10px;
+          margin: 5px;
           box-shadow:0px -1px 9px 0px rgba(234,234,234,1);
         }
       }

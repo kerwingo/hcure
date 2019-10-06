@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="innerDialog-wrap" v-show="innerDialogVisible">
-        <div class="innerDialog">
+        <div class="innerDialog" id="innerDialog">
             <span class="close" @click="closeInnerDialog"></span>
             <prescription @closeInnerDialog = "closeInnerDialog"></prescription>
         </div>
@@ -142,18 +142,25 @@ export default {
   }
   .innerDialog-wrap {
     box-sizing: border-box;
-    background: #F2F2F2;
+    background: rgba(0,0,0,0.1);
     position: absolute;
     z-index: 10;
-    width: 80%;
-    min-width: 1300px;
+    top: 0;
+    left: 0;
+    width: 100%;
     height:100%;
-    overflow-y: scroll;
-    left: 50%;
-    top: 50%;
-    padding: 30px 0 30px 15px;
-    transform: translate(-50%,-50%);//IE8不支持
+    display: flex;
+    justify-content: center;
+    align-items: center;
     .innerDialog {
+      width: 80%;
+      padding: 20px;
+      box-sizing: border-box;
+      min-width: 1300px;
+      height:100%;
+      overflow-y: scroll;
+      background: #F2F2F2;
+      z-index: 20;
       position: relative;
       .close {
         display: inline-block;
@@ -166,7 +173,7 @@ export default {
         background-size: cover;
         position: absolute;
         top: 40px;
-        right: 20px;
+        right: 40px;
         transition: 0.3s;
         &:hover {
            transform:rotate(180deg);

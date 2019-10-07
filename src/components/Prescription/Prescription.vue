@@ -43,7 +43,7 @@
               </div>
               <div class="operations">
                   <div class="btns">
-                      <span class="clear">清空</span>
+                      <span class="clear" @click="dynamicTags=[]">清空</span>
                       <span class="add" @click="openPanel('zd',true)">新增</span>
                   </div>
                   <p class="limit">10个标签以内</p>
@@ -68,12 +68,7 @@
               style="width: 100%">
               <el-table-column label="" width="80">
                 <template slot-scope="scope">
-                  <i class="el-icon-delete" @click.native.prevent="deleteRow(scope.$index, tableData)"></i>
-        <!--          <el-button
-                    size="mini"
-                    type="danger"
-                    icon="el-icon-circle-close"
-                    @click.native.prevent="deleteRow(scope.$index, tableData)"></el-button>-->
+                  <i class="el-icon-delete" @click="deleteRow(scope.$index, westernData)" style="cursor: pointer"></i>
                 </template>
               </el-table-column>
               <el-table-column
@@ -227,9 +222,12 @@
                     </template>
                   </el-table-column>
                 </el-table>
+                <div class="add-item" @click="openPanel('zy',true)">
+                  <i class="el-icon-circle-plus-outline"></i><span>添加项目</span>
+                </div>
               </div>
             </div>
-            <p class="change">增加/修改药方</p>
+            <p class="change" @click="openPanel('yf',true)">增加/修改药方</p>
             <ul class="handleWrite">
               <li>
                 <span>用药副数</span>
@@ -286,7 +284,7 @@
         <span class="cancel" @click="cancel">取消</span>
         <span class="print" @click="printHtmlCustomStyle">确定并打印</span>
     </div>
-    <InfoPanel ref="InfoPanel"></InfoPanel>
+    <InfoPanel ref="InfoPanel" @addItem="addItem" ></InfoPanel>
   </div>
 </template>
 <script>
@@ -376,38 +374,7 @@ export default {
           m_bx: '可报销'
         }],
       tcmData: [
-        [{c_name: '南天竹叶',
-          c_sl: '5g',
-          c_dj: '1',
-          c_zje: '5'},
-        {c_name: '南天竹叶',
-          c_sl: '5g',
-          c_dj: '1',
-          c_zje: '5'},
-        {c_name: '南天竹叶',
-          c_sl: '5g',
-          c_dj: '1',
-          c_zje: '5'},
-        {c_name: '南天竹叶',
-          c_sl: '5g',
-          c_dj: '1',
-          c_zje: '5'}],
-        [{c_name: '南天竹叶',
-          c_sl: '5g',
-          c_dj: '1',
-          c_zje: '5'},
-        {c_name: '南天竹叶',
-          c_sl: '5g',
-          c_dj: '1',
-          c_zje: '5'}],
-        [{c_name: '南天竹叶',
-          c_sl: '5g',
-          c_dj: '1',
-          c_zje: '5'},
-        {c_name: '南天竹叶',
-          c_sl: '5g',
-          c_dj: '1',
-          c_zje: '5'}]
+
       ],
       c_fs: '',
       c_ff: '',
@@ -452,6 +419,46 @@ export default {
     },
     openPanel (type, display) {
       this.$refs.InfoPanel.displayPanel(type, display)
+    },
+    addItem (type, data) {
+      switch (type) {
+        case 'zd':
+          this.addZd(data)
+          return
+        case 'xy':
+          this.addXy(data)
+          return
+        case 'yf':
+          this.addYf(data)
+      }
+    },
+    addZd (data) {
+      this.dynamicTags.push(data)
+    },
+    addXy (data) {
+      let item = {
+        m_gl: '1',
+        m_dcjl: '200',
+        m_jldw: '毫升',
+        m_pc: '每天1次',
+        m_yf: '静脉滴注',
+        m_lc: '1',
+        m_dj: '566',
+        m_sl: '2',
+        m_ds: '15滴/分',
+        m_bzdw: '**/分',
+        m_zje: '688'
+      }
+      item.m_name = data.name
+      item.m_jx = data.jx
+      item.m_gg = data.gg
+      item.m_bx = data.bx
+      this.westernData.push(item)
+    },
+    addYf (data) {
+      for (let i = 0, len = data.length; i < len; i += len / 3) {
+        this.tcmData.push(data.slice(i, i + len / 3))
+      }
     },
     printHtmlCustomStyle () {
       const style = '@page { margin: 0 } @media print { h1 { color: blue } }'// 直接写样式
@@ -628,7 +635,7 @@ export default {
       .tcmTab {
         display: flex;
         width: 100%;
-        overflow-x: scroll;
+        /*overflow-x: scroll;*/
         justify-content: space-between;
         flex-wrap: wrap;
         .tcmData{

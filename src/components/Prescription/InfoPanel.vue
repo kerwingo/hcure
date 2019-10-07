@@ -15,25 +15,50 @@
           <div v-show="isResult">
             <div class="ideal" v-show="panelType ==='zd'">
               <ul class="list">
-                <li>
-                  ****************情况
-                </li>
-                <li>
-                  ****************情况
-                </li>
-                <li>
-                  ****************情况
-                </li>
-                <li>
-                  ****************情况
+                <li v-for="(item,index) in listOne" :key="'listOne'+index" @click="addItem('zd',item)">
+                  {{item}}
                 </li>
               </ul>
             </div>
             <div class="ideal" v-show="panelType ==='xy'">
-              xy
+                <table style="width: 100%">
+                  <col width="30%">
+                    <thead>
+                      <tr>
+                        <td>项目名称</td>
+                        <td>剂型</td>
+                        <td>规格</td>
+                        <td>报销</td>
+                      </tr>
+                    </thead>
+                  <tbody>
+                      <tr v-for="(item,index) in listTwo" :key="'listTwo'+index" @click="addItem('xy',item)">
+                        <td>{{item.name}}</td>
+                        <td>{{item.jx}}</td>
+                        <td>{{item.gg}}</td>
+                        <td>{{item.bx}}</td>
+                      </tr>
+                  </tbody>
+                </table>
             </div>
-            <div class="ideal" v-show="panelType ==='zy'">
-              zy
+            <div class="ideal" v-show="panelType ==='yf'">
+              <table style="width: 100%">
+                <col width="30%">
+                <thead>
+                <tr>
+                  <td>药方名称</td>
+                  <td>主治</td>
+                  <td>药材种类</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(item,index) in listThree" :key="'listThree'+index" @click="addItem('yf',item.data)">
+                  <td>{{item.name}}</td>
+                  <td>{{item.zz}}</td>
+                  <td>{{item.zl}}</td>
+                </tr>
+                </tbody>
+              </table>
             </div>
             <pagination :total="10" :currentPage="currentPage" @getCurrentPage="getCurrentPage"></pagination>
           </div>
@@ -68,6 +93,129 @@ export default {
       placeholder: '请输入诊断描述',
       inputValue: '',
       resultTips: '搜索结果：',
+      listOne: [
+        '感冒发烧1',
+        '感冒发烧',
+        '感冒发烧',
+        '感冒发烧',
+        '感冒发烧7'
+      ],
+      listTwo: [{
+        name: '阿莫西林1',
+        jx: '100g',
+        gg: '100',
+        bx: '可报销'
+      },
+      {
+        name: '阿莫西林2',
+        jx: '100g',
+        gg: '100',
+        bx: '不可报销'
+      }
+      ],
+      listThree: [
+        {name: '传统秘方',
+          zz: '胃病',
+          zl: '6种',
+          data: [
+            {c_name: '南天竹叶2',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶3',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶4',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶5',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶6',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶7',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'}
+          ]
+        },
+        {name: '传统秘方2',
+          zz: '胃病2',
+          zl: '7种',
+          data: [
+            {c_name: '南天竹叶1',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶2',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶3',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶7',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'}
+          ]},
+        {name: '传统秘方2',
+          zz: '胃病2',
+          zl: '8种',
+          data: [
+            {c_name: '南天竹叶1',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶2',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶3',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶4',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶5',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'},
+            {c_name: '南天竹叶8',
+              c_sl: '5g',
+              c_dj: '1',
+              c_zje: '5'}
+          ]}
+      ],
+      listFour: [],
       loading: false,
       isResult: false,
       currentPage: 1
@@ -79,6 +227,9 @@ export default {
       this.panelType = type
       if (display) {
         this.currentPage = 1 // 初始化当前页
+        this.loading = false
+        this.isResult = false
+        this.inputValue = ''
         document.getElementById('innerDialog').style.overflowY = 'hidden'
       } else {
         document.getElementById('innerDialog').style.overflowY = 'scroll'
@@ -94,7 +245,7 @@ export default {
           this.tit2 = ''
           this.placeholder = '请输入项目名称'
           return
-        case 'zy':
+        case 'yf':
           this.tit1 = '添加药方'
           this.tit2 = '中药汤剂'
           this.placeholder = '请输入药方名称'
@@ -102,13 +253,33 @@ export default {
     },
     doSearch () {
       // use inputValue do somethings
-      console.log('inputValue')
-      getDiagdescs()
+      // this.loading = true
+      this.isResult = true
+      /* switch (this.panelType) {
+        case 'zd':
+          getDiagdescs().then(res => {
+            this.listOne = res
+            this.isResult = true
+            this.loading = false
+          })
+      } */
     },
     getCurrentPage (val) {
       this.currentPage = val
       console.log('父组件获取到currentPage', this.currentPage)
+    },
+    addItem (type, data) {
+      this.$emit('addItem', type, data)
     }
+    /* addZd (type, data) {
+      this.$emit('addZd', data)
+    },
+    addXy (data) {
+      this.$emit('addXy', data)
+    },
+    addZy (data) {
+      this.$emit('addZy', data)
+    } */
   },
   mounted () {
   }
@@ -199,7 +370,7 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 30px 0;
+        padding:0 0 30px 0;
         .list{
           min-width: 70%;
           overflow: hidden;
@@ -217,6 +388,30 @@ export default {
               background: linear-gradient(to right, #F6F6F6 ,#fff, #F6F6F6); /* 标准的语法 */
               box-shadow:0px 0px 16px 0px rgba(212,212,212,0.53);
               border-bottom:0
+            }
+          }
+        }
+        table{
+          vertical-align: middle;
+          font-size: 22px;
+          tr {
+            background: #fff;
+            cursor: pointer;
+            border-bottom: 1px solid #F6F6F6;
+            &:hover {
+              background: #F6F6F6;
+            }
+            td{
+              line-height: 66px;
+              vert-align: middle !important;
+            }
+          }
+          thead tr {
+            background: #F6F6F6;
+            box-shadow:0px 0px 16px 0px rgba(212,212,212,0.53);
+            &:hover {cursor: text}
+            td {
+              color: #737373;
             }
           }
         }

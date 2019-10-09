@@ -5,35 +5,42 @@
       <div class="header_title" style="float: left">享乐康医生后台管理系统</div>
     </el-col>
     <el-col class="header_user">
-      <div @click="logout">退出</div>
-      <div></div>
-      <div>{{corporateName}}</div>
-      <div></div>
+      <div class="exit" @click="logout"><i class="icon-exit"></i>退出登录</div>
+      <div class="company" v-if="GET_USER_INFO"><i class="icon-company"></i>欢迎<span style="margin-right: 10px">{{GET_USER_INFO.orgName}} </span><span>{{GET_USER_INFO.doctorsName}}</span></div>
     </el-col>
   </el-header>
 </template>
 
 <script>
+import {mapGetters, mapActions} from 'vuex'
 export default {
-  name: "Header",
+  name: 'Header',
   components: {},
-  props: ["corporateName"],
-  data() {
+  props: ['corporateName'],
+  data () {
     return {
-    };
+    }
+  },
+  computed: {
+    userInfo () {
+      return this.GET_USER_INFO
+    },
+    ...mapGetters({
+      GET_USER_INFO: 'GET_USER_INFO'
+    })
   },
   methods: {
-    logout: function() {
-      let _this = this;
-      this.$confirm("确认退出吗?", "提示", {})
+    logout: function () {
+      let _this = this
+      this.$confirm('确认退出吗?', '提示', {})
         .then(() => {
-          sessionStorage.removeItem("token");
-          _this.$router.push("/login");
+          sessionStorage.removeItem('token')
+          _this.$router.push('/login')
         })
-        .catch(() => {});
+        .catch(() => {})
     }
   }
-};
+}
 </script>
 
 <style scoped lang="less">
@@ -68,46 +75,34 @@ export default {
     float: right;
     max-width: 600px;
     padding: 30px 47px 30px 0;
-    div {
-      float: right;
-      height: 100%;
-      color: white;
-      text-align: center;
+    display: flex;
+    justify-content: flex-end;
+    font-size: 20px;
+    .exit {
+      display: flex;
+      align-items: center;
+      margin-right: 35px;
       cursor: pointer;
-      font-size: 17px;
+      .icon-exit {
+        display: inline-block;
+        width: 30px;
+        height:30px;
+        background: url("../../../static/img/exit.png") no-repeat;
+        background-size: cover;
+        margin-right: 5px;
+      }
     }
-    div:nth-child(4) {
-      width: 24px;
-      background: url("../../../static/img/company.png") no-repeat;
-      background-size: cover;
-    }
-    div:nth-child(3) {
-      padding-left: 5px;
-      letter-spacing: 1px;
-      /* width: 350px;*/
-      text-align: left;
-      color: #ffffff;
-      line-height: 28px;
-    }
-    div:nth-child(2) {
-      margin-left: 50px;
-      width: 24px;
-      background: url("../../../static/img/me_1.png") no-repeat;
-      background-size: cover;
-    }
-    div:nth-child(1) {
-      padding-left: 5px;
-      line-height: 28px;
-    }
-    div:nth-child(5) {
-      margin-left: 40px;
-      width: 24px;
-      background: url("../../../static/img/exit.png") no-repeat;
-      background-size: cover;
-    }
-    div:nth-child(6) {
-      padding-left: 10px;
-      line-height: 28px;
+    .company {
+      display: flex;
+      align-items: center;
+      .icon-company {
+        display: inline-block;
+        width: 30px;
+        height:30px;
+        background: url("../../../static/img/company.png") no-repeat;
+        background-size: cover;
+        margin-right: 5px;
+      }
     }
   }
 }

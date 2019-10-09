@@ -6,21 +6,19 @@
         :formatter="dateFormatter"
         label="时间"
         sortable
-        width="300"
         column-key="buildtime"
       ></el-table-column>
       <el-table-column
         prop="category"
         label="乐币类型 "
-        width="300"
         :formatter="categoryFormatter"
         :filters="[{ text: '金乐币', value: '0' }, { text: '银乐币', value: '1' },{ text: '铜乐币', value: '2' }]"
         :filter-method="filterCategory"
         filter-placement="bottom-end"
       >
       </el-table-column>
-      <el-table-column prop="income" label="收支" width="300"></el-table-column>
-      <el-table-column prop="balance" label="剩余金额"  width="300"></el-table-column>
+      <el-table-column prop="income" label="收支" ></el-table-column>
+      <el-table-column prop="balance" label="剩余金额"  ></el-table-column>
       <el-table-column
         prop="Evaluation"
         :formatter="commentFormatter"

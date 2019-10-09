@@ -1,328 +1,400 @@
 <template>
-  <div id="prescription">
-    <div class="prescription" >
-      <div class="main">
-        <h3 class="p-tit">历史问诊处方签</h3>
-        <p class="line"></p>
-        <div class="case-info">
-          <span>患者姓名：张三</span>
-          <span>患者性别：男</span>
-          <span>患者年龄：36</span>
-          <span>开方日期：2019年8月1日</span>
-        </div>
-        <el-row class="text-item">
-          <el-col :span="6"><div class="tit" ><span style="display: inline-block;color: red;font-weight: bold;font-size: 20px;position: relative;top: 5px;margin-right: 3px;">*</span> 病史、症状及体征：</div></el-col>
-          <el-col :span="18">
-            <el-input
-              type="textarea"
-              :rows="5"
-              placeholder="请输入内容"
-              v-model="medicalHistory"
-              :readonly="readonly"
-              maxlength="1000"
-              show-word-limit
-            >
-            </el-input>
-
-          </el-col>
-        </el-row>
-        <el-row class="text-item">
-          <el-col :span="6"><div class="tit"><span style="display: inline-block;color: red;font-weight: bold;font-size: 20px;position: relative;top: 5px;margin-right: 3px;">*</span>临床诊断：</div></el-col>
-          <el-col :span="18">
-            <div class="tags">
-              <div>
-                <el-tag
-                  v-for="(tag,index) in dynamicTags"
-                  :key="tag+index"
-                  :closable = "closable"
-                  :disable-transitions="false"
-                  @close="handleClose(tag)"
-                >
-                  {{tag}}
-                </el-tag>
-              </div>
-              <div class="operations">
+  <div>
+    <div id="prescription" v-show="prescription">
+      <div class="prescription" >
+        <div class="main">
+          <h3 class="p-tit">{{prscTit}}</h3>
+          <p class="line"></p>
+          <div class="case-info">
+            <span>患者姓名：{{sicker.caption}}</span>
+            <span>患者性别：{{sicker.sex===0?'男':'女'}}</span>
+            <span>患者年龄：{{sicker.age}}</span>
+            <span>开方日期：{{prsDate}}</span>
+          </div>
+          <el-row class="text-item">
+            <el-col :span="6"><div class="tit" ><span style="display: inline-block;color: red;font-weight: bold;font-size: 20px;position: relative;top: 5px;margin-right: 3px;">*</span> 病史、症状及体征：</div></el-col>
+            <el-col :span="18">
+              <el-input
+                type="textarea"
+                :rows="5"
+                placeholder="请输入内容"
+                v-model="medicalHistory"
+                :readonly="!isAdd"
+                maxlength="1000"
+                show-word-limit
+              >
+              </el-input>
+            </el-col>
+          </el-row>
+          <el-row class="text-item">
+            <el-col :span="6"><div class="tit"><span style="display: inline-block;color: red;font-weight: bold;font-size: 20px;position: relative;top: 5px;margin-right: 3px;">*</span>临床诊断：</div></el-col>
+            <el-col :span="18">
+              <div class="tags">
+                <div>
+                  <el-tag
+                    v-for="(tag,index) in dynamicTags"
+                    :key="tag+index"
+                    :closable = "isAdd"
+                    :disable-transitions="false"
+                    @close="handleClose(tag)"
+                  >
+                    {{tag.description}}
+                  </el-tag>
+                </div>
+                <div class="operations" v-show="isAdd">
                   <div class="btns">
-                      <span class="clear" @click="dynamicTags=[]">清空</span>
-                      <span class="add" @click="openPanel('zd',true)">新增</span>
+                    <span class="clear" @click="dynamicTags=[]">清空</span>
+                    <span class="add" @click="openPanel('zd',true)">新增</span>
                   </div>
                   <p class="limit">10个标签以内</p>
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
-    </div>
-    <div class="medical">
-      <div class="tabs-wrap">
-          <ul class="tabs">
-            <li v-for="(tag,index) in tabs" :key="'index'+index" @click="toggleTabs(index)" :class="{'active':index==nowIndex}">
-                {{tag}}
-            </li>
-          </ul>
-        <div class="tabs-block">
-          <div class="divTab" v-show="nowIndex===0">
-            <el-table
-              border
-              :data="westernData"
-              style="width: 100%">
-              <el-table-column label="" width="80">
-                <template slot-scope="scope">
-                  <i class="el-icon-delete" @click="deleteRow(scope.$index, westernData)" style="cursor: pointer"></i>
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="项目名称"
-                width="">
-                <template slot-scope="scope">
-                  {{ scope.row.m_name }}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="剂型"
-                width="70">
-                <template slot-scope="scope">
-                  {{ scope.row.m_jx }}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="规格"
-                width="">
-                <template slot-scope="scope">
-                  {{ scope.row.m_gg }}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="关联"
-                width="50">
-                <template slot-scope="scope">
-                  {{ scope.row.m_gl}}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="单次剂量"
-                width="80">
-                <template slot-scope="scope">
-                  {{ scope.row.m_dcjl}}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="剂量单位"
-                width="80">
-                <template slot-scope="scope">
-                  {{ scope.row.m_jldw}}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="频次"
-                width="80">
-                <template slot-scope="scope">
-                  {{ scope.row.m_pc}}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="用法"
-                width="80">
-                <template slot-scope="scope">
-                  {{ scope.row.m_yf}}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="疗程"
-                width="50">
-                <template slot-scope="scope">
-                  {{ scope.row.m_lc}}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="单价"
-                width="70">
-                <template slot-scope="scope">
-                  {{ scope.row.m_dj}}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="数量"
-                width="50">
-                <template slot-scope="scope">
-                  {{ scope.row.m_sl}}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="滴速"
-                width="70">
-                <template slot-scope="scope">
-                  {{ scope.row.m_ds}}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="包装单位"
-                width="90">
-                <template slot-scope="scope">
-                  {{ scope.row.m_bzdw}}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="总金额"
-                width="80">
-                <template slot-scope="scope">
-                  {{ scope.row.m_zje}}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="报销"
-                width="70">
-                <template slot-scope="scope">
-                  {{ scope.row.m_bx}}
-                </template>
-              </el-table-column>
-            </el-table>
-            <div class="add-item" @click="openPanel('xy',true)">
-                <i class="el-icon-circle-plus-outline"></i><span>添加项目</span>
-            </div>
-          </div>
-          <div class="divTab" v-show="nowIndex===1">
-            <div class="tcmTab">
-              <div v-for="(table,index) in tcmData" :key="'tcmData'+index" class="tcmData">
-                <el-table
-                  border
-                  :data="table"
-                  style="width: 100%">
-                  <el-table-column label="" width="">
-                    <template slot-scope="scope">
-                      <i data-v-77b9088f="" class="el-icon-delete" @click.native.prevent="deleteRow(scope.$index, tableData)"></i>
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    label="药品名称"
-                    width="">
-                    <template slot-scope="scope">
-                      {{ scope.row.c_name }}
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    label="数量"
-                    width="">
-                    <template slot-scope="scope">
-                      {{ scope.row.c_sl }}
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    label="单价"
-                    width="">
-                    <template slot-scope="scope">
-                      {{ scope.row.c_dj }}
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    label="总金额"
-                    width="">
-                    <template slot-scope="scope">
-                      {{ scope.row.c_zje }}
-                    </template>
-                  </el-table-column>
-                </el-table>
-                <div class="add-item" @click="openPanel('zy',true)">
-                  <i class="el-icon-circle-plus-outline"></i><span>添加项目</span>
                 </div>
               </div>
+            </el-col>
+          </el-row>
+        </div>
+      </div>
+      <div class="medical">
+        <div class="tabs-wrap">
+          <ul class="tabs">
+            <li v-for="(tag,index) in tabs" :key="'index'+index" @click="toggleTabs(index)" :class="{'active':index==nowIndex}">
+              {{tag}}
+            </li>
+          </ul>
+          <div class="tabs-block">
+            <div class="divTab" v-show="nowIndex===0">
+              <el-table
+                border
+                :data="westernData"
+                style="width: 100%">
+                <el-table-column label="" width="80">
+                  <template slot-scope="scope">
+                    <i class="el-icon-delete" @click="deleteRow(scope.$index, westernData)" style="cursor: pointer"></i>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="项目名称"
+                  width="">
+                  <template slot-scope="scope">
+                    {{ scope.row.m_name }}
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="剂型"
+                  width="70">
+                  <template slot-scope="scope">
+                    {{ scope.row.m_jx }}
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="规格"
+                  width="">
+                  <template slot-scope="scope">
+                    {{ scope.row.m_gg }}
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="关联"
+                  width="80">
+                  <template slot-scope="scope">
+                    <el-input v-model="gl_input"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="单次剂量"
+                  width="80">
+                  <template slot-scope="scope">
+                    {{ scope.row.m_dcjl}}
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="剂量单位"
+                  width="120">
+                  <template slot-scope="scope">
+                    <el-select v-model="scope.se_value1" placeholder="请选择">
+                      <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                      </el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="频次"
+                  width="120">
+                  <template slot-scope="scope">
+                    <el-select v-model="se_value1" placeholder="请选择">
+                      <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                      </el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="用法"
+                  width="120">
+                  <template slot-scope="scope">
+                    <el-select v-model="se_value1" placeholder="请选择">
+                      <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                      </el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="疗程"
+                  width="50">
+                  <template slot-scope="scope">
+                    {{ scope.row.m_lc}}
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="单价"
+                  width="70">
+                  <template slot-scope="scope">
+                    {{ scope.row.m_dj}}
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="数量"
+                  width="50">
+                  <template slot-scope="scope">
+                    {{ scope.row.m_sl}}
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="滴速"
+                  width="120">
+                  <template slot-scope="scope">
+                    <el-select v-model="se_value1" placeholder="请选择">
+                      <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                      </el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="包装单位"
+                  width="90">
+                  <template slot-scope="scope">
+                    {{ scope.row.m_bzdw}}
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="总金额"
+                  width="80">
+                  <template slot-scope="scope">
+                    {{ scope.row.m_zje}}
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="报销"
+                  width="70">
+                  <template slot-scope="scope">
+                    {{ scope.row.m_bx}}
+                  </template>
+                </el-table-column>
+              </el-table>
+              <div class="add-item" @click="openPanel('xy',true)" v-show="isAdd">
+                <i class="el-icon-circle-plus-outline"></i><span>添加项目</span>
+              </div>
             </div>
-            <p class="change" @click="openPanel('yf',true)">增加/修改药方</p>
-            <ul class="handleWrite">
-              <li>
-                <span>用药副数</span>
-                <el-input v-model="c_fs" placeholder="请输入内容"></el-input>
-              </li>
+            <div class="divTab" v-show="nowIndex===1">
+              <div class="tcmTab">
+                <div v-for="(table,index) in tcmData" :key="'tcmData'+index" class="tcmData">
+                  <el-table
+                    border
+                    :data="table"
+                    style="width: 100%">
+                    <el-table-column label="" width="">
+                      <template slot-scope="scope">
+                        <i data-v-77b9088f="" class="el-icon-delete" @click="deleteRow(scope.$index, table)" style="cursor: pointer"></i>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="药品名称"
+                      width="">
+                      <template slot-scope="scope">
+                        {{ scope.row.c_name }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="数量"
+                      width="">
+                      <template slot-scope="scope">
+                        {{ scope.row.c_sl }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="单价"
+                      width="">
+                      <template slot-scope="scope">
+                        {{ scope.row.c_dj }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="总金额"
+                      width="">
+                      <template slot-scope="scope">
+                        {{ scope.row.c_zje }}
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <div class="add-item" @click="openPanel('zy',true)" v-show="nowTcmData === index">
+                    <i class="el-icon-circle-plus-outline"></i><span>添加项目</span>
+                  </div>
+                </div>
+              </div>
+              <p class="change" @click="openPanel('yf',true)" v-show="isAdd">增加/修改药方</p>
+              <ul class="handleWrite">
+                <li>
+                  <span>用药副数</span>
+                  <el-input v-model="c_fs" placeholder="请输入内容" :readonly="!isAdd"></el-input>
+                </li>
                 <li>
                   <span>用药方法</span>
-                  <el-input v-model="c_ff" placeholder="请输入内容"></el-input>
+                  <el-input v-model="c_ff" placeholder="请输入内容" :readonly="!isAdd"></el-input>
                 </li>
-              <li>
-                <span>用药频次</span>
-                <el-input v-model="c_pc" placeholder="请输入内容"></el-input>
-              </li>
-              <li>
-                <span>一次用药</span>
-                <el-input v-model="c_ycyy" placeholder="请输入内容"></el-input>
-              </li>
-            </ul>
+                <li>
+                  <span>用药频次</span>
+                  <el-input v-model="c_pc" placeholder="请输入内容" :readonly="!isAdd"></el-input>
+                </li>
+                <li>
+                  <span>一次用药</span>
+                  <el-input v-model="c_ycyy" placeholder="请输入内容" :readonly="!isAdd"></el-input>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="history">
-      <div class="main">
-        <el-row class="text-item">
-          <el-col :span="5"><div class="tit" ><span style="display: inline-block;color: red;font-weight: bold;font-size: 20px;position: relative;top: 5px;margin-right: 3px;">*</span> 医嘱：</div></el-col>
-          <el-col :span="19">
-            <el-input
-              type="textarea"
-              :rows="5"
-              placeholder="请输入内容"
-              v-model="medicalHistory"
-              :readonly="readonly"
-              maxlength="1000"
-              show-word-limit
-            >
-            </el-input>
-          </el-col>
-        </el-row>
-        <el-row class="text-item history-main">
-          <el-col :span="5"><div class="tit">历史诊断记录：</div></el-col>
-          <el-col :span="19">
-            <div class="history-list">
+      <div class="history">
+        <div class="main">
+          <el-row class="text-item">
+            <el-col :span="5"><div class="tit" ><span style="display: inline-block;color: red;font-weight: bold;font-size: 20px;position: relative;top: 5px;margin-right: 3px;">*</span> 医嘱：</div></el-col>
+            <el-col :span="19">
+              <el-input
+                type="textarea"
+                :rows="5"
+                placeholder="请输入内容"
+                v-model="medicalHistory"
+                :readonly="!isAdd"
+                maxlength="1000"
+                show-word-limit
+              >
+              </el-input>
+            </el-col>
+          </el-row>
+          <el-row class="text-item history-main">
+            <el-col :span="5"><div class="tit">历史诊断记录：</div></el-col>
+            <el-col :span="19">
+              <div class="history-list">
                 <ul>
                   <li v-for="(item,index) in historyList" :key="'ill_history'+index"><span style="margin-right: 20px">{{item.date}}</span>{{item.text}}</li>
                 </ul>
-            </div>
-            <pagination></pagination>
-          </el-col>
-        </el-row>
+              </div>
+              <pagination></pagination>
+            </el-col>
+          </el-row>
+        </div>
       </div>
+      <div class="operation">
+        <span class="cancel" @click="cancel" v-show="isAdd">取消</span>
+        <span class="o-close" @click="cancel" v-show="!isAdd">关闭</span>
+        <span class="print" @click="goPrint" v-show="isAdd">确定并打印</span>
+      </div>
+      <InfoPanel ref="InfoPanel" @addItem="addItem" ></InfoPanel>
     </div>
-    <div class="operation">
-        <span class="cancel" @click="cancel">取消</span>
-        <span class="print" @click="printHtmlCustomStyle">确定并打印</span>
-    </div>
-    <InfoPanel ref="InfoPanel" @addItem="addItem" ></InfoPanel>
+    <checkSend v-show="checkSend"></checkSend>
   </div>
 </template>
 <script>
 import pagination from '@/components/pagination/pagination'
 import InfoPanel from '@/components/Prescription/InfoPanel'
+import checkSend from '@/components/Prescription/checkSend'
 import printJS from 'print-js'
+import {mapGetters, mapActions} from 'vuex'
 export default {
   components: {
     pagination: pagination,
-    InfoPanel: InfoPanel
+    InfoPanel: InfoPanel,
+    checkSend: checkSend
   },
   props: {
-    closable: {
-      type: Boolean,
-      default: true
+    types: {
+      type: String,
+      default: ''
+    }
+  },
+  computed: {
+    ...mapGetters({
+      GET_SICKER: 'GET_SICKER'
+    }),
+    sicker: function () {
+      if (this.GET_SICKER) {
+        return this.GET_SICKER
+      }
+    }
+  },
+  watch: {
+    types: function (val) {
+      if (val === 'check') {
+        this.isAdd = false
+        this.prscTit = '历史问诊处方签'
+      } else {
+        this.isAdd = true
+        this.prscTit = '线上问诊处方签'
+      }
     }
   },
   data () {
     return {
+      prescription: true, // 处方笺页面的显隐
+      checkSend: false, // 检查弹窗页面的显隐
+      prscTit: '',
       msg: 'chatbox',
       dialogVisible: false,
       innerDialogVisible: false,
       medicalHistory: '海末次综合症',
-      readonly: false,
-      dynamicTags: [
-        '***诊断',
-        '***诊断',
-        '***诊断',
-        '***诊断'
-      ],
+      isAdd: false,
+      prsDate: '2019年8月1日',
+      dynamicTags: [],
       tabs: [
         '治疗/药品',
         '中药汤剂'
       ],
       activeName: 'second',
       nowIndex: 0, // 默认第一个tab为激活状态
+      gl_input: '',
+      options: [
+        {value: '每天一次',
+          label: '每天一次'},
+        {value: '每天二次',
+          label: '每天二次'}
+      ],
+      se_value1: '',
+      westernDataOption: {
+        'jldw': [{
+          value: '毫升',
+          label: '毫升'
+        },
+        {
+          value: '毫升',
+          label: '毫升'
+        }]
+      },
       westernData: [
-        {
+        /* {
           m_name: '***药品',
           m_jx: '液体',
           m_gg: '25毫升/瓶',
@@ -335,47 +407,15 @@ export default {
           m_dj: '566',
           m_sl: '2',
           m_ds: '15滴/分',
-          m_bzdw: '**/分',
+          m_bzdw: '**!/分',
           m_zje: '688',
           m_bx: '可报销'
-        },
-        {
-          m_name: '***药品',
-          m_jx: '液体',
-          m_gg: '25毫升/瓶',
-          m_gl: '1',
-          m_dcjl: '200',
-          m_jldw: '毫升',
-          m_pc: '每天1次',
-          m_yf: '静脉滴注',
-          m_lc: '1',
-          m_dj: '566',
-          m_sl: '2',
-          m_ds: '15滴/分',
-          m_bzdw: '**/分',
-          m_zje: '688',
-          m_bx: '可报销'
-        },
-        {
-          m_name: '***药品',
-          m_jx: '液体',
-          m_gg: '25毫升/瓶',
-          m_gl: '1',
-          m_dcjl: '200',
-          m_jldw: '毫升',
-          m_pc: '每天1次',
-          m_yf: '静脉滴注',
-          m_lc: '1',
-          m_dj: '566',
-          m_sl: '2',
-          m_ds: '15滴/分',
-          m_bzdw: '**/分',
-          m_zje: '688',
-          m_bx: '可报销'
-        }],
+        } */
+      ],
       tcmData: [
 
       ],
+      nowTcmData: 0,
       c_fs: '',
       c_ff: '',
       c_pc: '',
@@ -393,7 +433,6 @@ export default {
     }
   },
   mounted () {
-
   },
   methods: {
     closeDialog () {
@@ -416,8 +455,10 @@ export default {
     },
     deleteRow (index, rows) {
       rows.splice(index, 1)
+      console.log(this.tcmData)
     },
     openPanel (type, display) {
+      console.log(this.westernData)
       this.$refs.InfoPanel.displayPanel(type, display)
     },
     addItem (type, data) {
@@ -437,17 +478,14 @@ export default {
     },
     addXy (data) {
       let item = {
-        m_gl: '1',
-        m_dcjl: '200',
-        m_jldw: '毫升',
-        m_pc: '每天1次',
-        m_yf: '静脉滴注',
-        m_lc: '1',
-        m_dj: '566',
-        m_sl: '2',
-        m_ds: '15滴/分',
-        m_bzdw: '**/分',
-        m_zje: '688'
+        link: '', // 关联
+        dose: '', // 单次剂量
+        doseunitname: '', // 剂量单位名称
+        genfreqname: '', // 频次名称
+        wayname: '', // 用法名称
+        dropspeedname: '', // 滴速名称
+        course: '', // 疗程
+        amount: '' // 数量
       }
       item.m_name = data.name
       item.m_jx = data.jx
@@ -456,9 +494,36 @@ export default {
       this.westernData.push(item)
     },
     addYf (data) {
-      for (let i = 0, len = data.length; i < len; i += len / 3) {
-        this.tcmData.push(data.slice(i, i + len / 3))
+      let temp1 = []
+      let temp2 = []
+      let temp3 = []
+      for (let i = 0; i < data.length; i++) {
+        if ((i % 3) === 3 || (i % 3) === 0) {
+          temp1.push(data[i])
+        } else if ((i % 3) === 2) {
+          temp3.push(data[i])
+        } else if ((i % 3) === 1) {
+          temp2.push(data[i])
+        }
       }
+      this.tcmData = [temp1, temp2, temp3]
+    },
+    getMax (num1, num2, num3) {
+      let max = num1
+      if (num1 > num2) {
+        max = num1
+      } else {
+        max = num2
+      }
+      if (max > num3) {
+        return max
+      } else {
+        return num3
+      }
+    },
+    goPrint () {
+      this.prescription = false
+      this.checkSend = true
     },
     printHtmlCustomStyle () {
       const style = '@page { margin: 0 } @media print { h1 { color: blue } }'// 直接写样式
@@ -523,7 +588,7 @@ export default {
           background:rgba(238,238,238,1);
           color: #565656;
           margin: 0 20px 20px 0;
-          width: 135px;
+          min-width: 135px;
           height: 50px;
           box-sizing: border-box;
           text-align: center;
@@ -715,10 +780,17 @@ export default {
       color: #fff;
       background:rgba(67,190,127,1);
     }
+    &.o-close{
+      color: #fff;
+      background:rgba(67,190,127,1);
+    }
   }
 }
 </style>
 <style type="text/css">
+  .el-table__empty-text{
+    font-size: 16px;
+  }
   .el-table--enable-row-transition .el-table__body td{
     text-align: center !important;
   }
@@ -753,5 +825,8 @@ export default {
   .el-tag .el-tag__close:hover {
     color: #FFF;
     background-color: #999;
+  }
+  .el-input__inner{
+    padding: 0 5px;
   }
 </style>

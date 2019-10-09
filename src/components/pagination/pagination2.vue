@@ -1,7 +1,7 @@
 <template>
   <div class="pagination">
     <div class="count">
-      共{{tot}}页 第{{cp}}页
+      共{{Math.ceil(tot/pageSize)}}页 第{{cp}}页
     </div>
     <div class="opr">
         <span class="home" @click="handleCurrentChange('home')">回到首页</span>

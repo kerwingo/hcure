@@ -6,9 +6,9 @@
           <div class="search-wrap">
             <div class="input-wrap">
               <i class="icon-search el-icon-search"></i>
-              <input type="text" :placeholder = "placeholder" autofocus  v-model="inputValue">
+              <input type="text" :placeholder = "placeholder" autofocus  v-model="keyword" @keyup.enter="doSearch">
             </div>
-            <div class="search-btn" @click="doSearch">查询</div>
+            <el-button class="search-btn" @click.native.prevent="doSearch">查询</el-button>
           </div>
         <div class="result-wrap" v-loading="loading">
           <p class="r-tit">{{resultTips}}</p>
@@ -16,7 +16,7 @@
             <div class="ideal" v-show="panelType ==='zd'">
               <ul class="list">
                 <li v-for="(item,index) in listOne" :key="'listOne'+index" @click="addItem('zd',item)">
-                  {{item}}
+                  {{item.description}}
                 </li>
               </ul>
             </div>
@@ -60,13 +60,13 @@
                 </tbody>
               </table>
             </div>
-            <pagination :total="10" :currentPage="currentPage" @getCurrentPage="getCurrentPage"></pagination>
+            <pagination :total="total" :currentPage="currentPage" @getCurrentPage="getCurrentPage"></pagination>
           </div>
           <div class="non-ideal" v-show="!isResult">
               <div>
                 <img src="@/static/img/history.png" alt="">
               </div>
-              <p class="warn">您对病症的描述不准确  请输入标准描述</p>
+              <p class="warn">{{emptyTips}}</p>
           </div>
         </div>
       </div>
@@ -76,7 +76,8 @@
 <script>
 import pagination from '@/components/pagination/pagination2'
 import {
-  getDiagdescs
+  getDiagdescs,
+  itemsPage
 } from '@/axios/api'
 export default {
   name: 'InfoPanel',
@@ -91,7 +92,7 @@ export default {
       tit1: '临床诊断',
       tit2: '中药汤剂',
       placeholder: '请输入诊断描述',
-      inputValue: '',
+      keyword: '',
       resultTips: '搜索结果：',
       listOne: [
         '感冒发烧1',
@@ -218,6 +219,10 @@ export default {
       listFour: [],
       loading: false,
       isResult: false,
+      total: 0,
+      pageSize: 10,
+      offset: 0,
+      emptyTips: '您对病症的描述不准确  请输入标准描述',
       currentPage: 1
     }
   },
@@ -239,37 +244,76 @@ export default {
           this.tit1 = '临床诊断'
           this.tit2 = ''
           this.placeholder = '请输入诊断描述'
+          this.emptyTips = '暂无相关病症的标签'
           return
         case 'xy':
           this.tit1 = '查找项目'
           this.tit2 = ''
           this.placeholder = '请输入项目名称'
+          this.emptyTips = '暂无此项目 请更换其他项目'
           return
         case 'yf':
           this.tit1 = '添加药方'
           this.tit2 = '中药汤剂'
           this.placeholder = '请输入药方名称'
+          this.emptyTips = '暂无此药方  请更换其他药方'
       }
     },
     doSearch () {
       // use inputValue do somethings
-      // this.loading = true
-      this.isResult = true
-      /* switch (this.panelType) {
+      this.loading = true
+      this.isResult = false
+      let data = {
+        'offset': this.offset,
+        'limit': this.pageSize,
+        'keyword': this.keyword
+      }
+      switch (this.panelType) {
         case 'zd':
-          getDiagdescs().then(res => {
-            this.listOne = res
-            this.isResult = true
+          getDiagdescs(data).then(res => {
+            if (Number(res.data.data.total) === 0 || res.data.data.list === null || res.data.data.list.length === 0) {
+              this.isResult = false
+            } else {
+              this.listOne = res.data.data.list
+              this.total = Number(res.data.data.total)
+              this.isResult = true
+            }
             this.loading = false
-          })
-      } */
+          }).catch(
+            this.loading = false
+          )
+          return
+        case 'xy':
+          itemsPage(data).then(res => {
+            if (Number(res.data.data.total) === 0 || res.data.data.list === null || res.data.data.list.length === 0) {
+              this.isResult = false
+            } else {
+              this.listOne = res.data.data.list
+              this.total = Number(res.data.data.total)
+              this.isResult = true
+            }
+            this.loading = false
+          }).catch(
+            this.loading = false
+          )
+      }
     },
     getCurrentPage (val) {
       this.currentPage = val
       console.log('父组件获取到currentPage', this.currentPage)
+      console.log(val)
+      if (val === 1) {
+        this.offset = 0
+      } else {
+        this.offset = (val - 1) * this.pageSize
+      }
+      this.inquire()
     },
     addItem (type, data) {
       this.$emit('addItem', type, data)
+      switch (type) {
+        case 'zd':
+      }
     }
     /* addZd (type, data) {
       this.$emit('addZd', data)
@@ -302,6 +346,7 @@ export default {
   .panel {
     position: relative;
     width: 1000px;
+    min-height: 700px;
     padding: 20px;
     box-sizing: border-box;
     background-color: #F6F6F6;
@@ -342,7 +387,6 @@ export default {
         background:rgba(67,190,127,1);
         border-radius:3px;
         text-align: center;
-        line-height: 50px;
         cursor: pointer;
       }
     }
@@ -353,12 +397,13 @@ export default {
         margin-bottom: 30px;
       }
       .non-ideal{
-        min-height: 200px;
+        min-height: 400px;
         padding: 80px 0;
         display: flex;
         justify-content: center;
         align-items: center;
         flex-direction: column;
+        box-sizing: border-box;
         .warn {
           margin-top: 60px;
           font-size:22px;
@@ -371,6 +416,8 @@ export default {
         justify-content: center;
         align-items: center;
         padding:0 0 30px 0;
+        min-height: 400px;
+        box-sizing: border-box;
         .list{
           min-width: 70%;
           overflow: hidden;
@@ -384,6 +431,7 @@ export default {
             border-bottom: 1px solid rgba(220,220,220,0.5);
             cursor: pointer;
             box-sizing: border-box;
+            font-size: 22px;
             &:hover {
               background: linear-gradient(to right, #F6F6F6 ,#fff, #F6F6F6); /* 标准的语法 */
               box-shadow:0px 0px 16px 0px rgba(212,212,212,0.53);

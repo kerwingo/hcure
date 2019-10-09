@@ -2,8 +2,8 @@
   <div>
     <div class="chatBox">
       <div class="chatBox-head">
-        <p>张某某患者</p>
-        <span class="collapse" v-show="true"></span>
+        <p>{{name}}</p>
+        <span class="collapse" v-show="true" @click="closeDialog('collapse')"></span>
         <span class="close" v-show="closeDialog" @click="closeDialog"></span>
       </div>
       <div class="chatBox-main">
@@ -11,15 +11,15 @@
           <im></im>
         </div>
         <div class="aside-box">
-          <div class="history" @click="openInnerDialog">
+          <div class="history" @click="openInnerDialog('check')">
             <img src="@/static/img/history.png" alt="">
             <p>查看历史记录</p>
           </div>
-          <div class="position">
+          <div class="position" @click="sendAddress">
             <img src="@/static/img/location.png" alt="">
             <p>位置</p>
           </div>
-          <div class="add" @click="openInnerDialog">
+          <div class="add" @click="openInnerDialog('add')">
             <img src="@/static/img/prescription.png" alt="">
             <p>添加处方笺</p>
           </div>
@@ -29,7 +29,7 @@
     <div class="innerDialog-wrap" v-show="innerDialogVisible">
         <div class="innerDialog" id="innerDialog">
             <span class="close" @click="closeInnerDialog"></span>
-            <prescription @closeInnerDialog = "closeInnerDialog"></prescription>
+            <prescription @closeInnerDialog = "closeInnerDialog" :types="types"></prescription>
         </div>
     </div>
   </div>
@@ -40,18 +40,25 @@
 import pagination from '@/components/pagination/pagination'
 import Im from '@/components/Im/Im'
 import prescription from '@/components/Prescription/Prescription'
-import { offlineinterrogation } from '@/axios/api'
+import { offlineinterrogation, address } from '@/axios/api'
 export default {
   components: {
     pagination: pagination,
     prescription: prescription,
     im: Im
   },
+  props: {
+    sicker: {
+      type: Object,
+      default: null
+    }
+  },
   data () {
     return {
       msg: 'chatbox',
       dialogVisible: false,
       innerDialogVisible: false,
+      types: '', // 处方笺的类型，查看和新增("check" || "add")
       medicalHistory: '海末次综合症',
       closable: false,
       readonly: false,
@@ -64,14 +71,22 @@ export default {
       activeName: 'second'
     }
   },
+  computed: {
+    name: function () {
+      if (this.sicker) {
+        return this.sicker.caption
+      }
+    }
+  },
   mounted () {
 
   },
   methods: {
-    closeDialog () {
-      this.$emit('closeDialog')
+    closeDialog (val) {
+      this.$emit('closeDialog', val)
     },
-    openInnerDialog () {
+    openInnerDialog (val) {
+      this.types = val
       this.innerDialogVisible = true
     },
     closeInnerDialog () {
@@ -79,6 +94,37 @@ export default {
     },
     handleClose (tag) {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
+    },
+    sendAddress () {
+      const h = this.$createElement
+      this.$msgbox({
+        title: '消息',
+        message: h('p', null, [
+          h('span', null, '确认发送地址给患者吗？'),
+          h('i', { style: 'color: teal' })
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true
+            instance.confirmButtonText = '发送中...'
+            address().then(res => {
+              console.log('address', res.data.data.address)
+              instance.confirmButtonLoading = false
+              done()
+            })
+          } else {
+            done()
+          }
+        }
+      }).then(action => {
+        /* this.$message({
+          type: 'info',
+          message: 'action: ' + action
+        }) */
+      })
     }
   }
 
@@ -135,6 +181,7 @@ export default {
           cursor: pointer;
           p{
             color:rgba(115,115,115,1);
+            line-height: 30px;
           }
         }
       }

@@ -4,6 +4,6 @@
  * describe: 全局的actions
  **/
 
-const getters = {
+export default {
+  // ( data ) let { state, commit, getters, rootState, dispatch } = data;
 }
-export default getters

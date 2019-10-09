@@ -90,7 +90,7 @@
         <div class="text">
           <p class="change right" @click="openEdit('bq')">修改</p>
           <el-checkbox-group v-model="checkedLables" :min="1" :max="2">
-            <el-checkbox v-for="tag in lableAll" :label="tag" :key="tag">{{tag}}</el-checkbox>
+            <el-checkbox v-for="(tag,index) in lableAll" :label="tag" :key="'tag'+index">{{tag}}</el-checkbox>
           </el-checkbox-group>
         </div>
       </div>
@@ -108,7 +108,7 @@ import {
   updateAdept,
   updateintroduce
 } from '@/axios/api'
-
+import {mapActions} from 'vuex'
 export default {
   name: '',
   components: {},
@@ -132,11 +132,13 @@ export default {
     this.getInfo()
   },
   methods: {
+    ...mapActions(['SET_USER_INFO']),
     // 获取页面展示数据
     getInfo () {
       doctorInfo()
         .then(res1 => {
           this.baseInfo = res1.data.data
+          this['SET_USER_INFO'](res1.data.data)
         })
         .then(() => {
           adeptInfo().then(res2 => {

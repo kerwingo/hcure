@@ -10,8 +10,8 @@ if (process.env.NODE_ENV == 'production') { // 正式环境
 //  axios.defaults.baseURL = 'http://192.168.1.254:8000/api/p/'
   axios.defaults.baseURL = window.location.protocol + '//' + window.location.host + ':8000/api/p/'
 } else { // 生产环境
-  axios.defaults.baseURL = 'http://192.168.1.240:8200/api/d/'
-  // axios.defaults.baseURL = 'http://192.168.1.90:8200/api/d/'
+  // axios.defaults.baseURL = 'http://192.168.1.240:8200/api/d/'
+  axios.defaults.baseURL = 'http://192.168.1.90:8200/api/d/'
 }
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'; 是否为from表单提交的传输对象 默认application/json
 axios.defaults.headers.common['Accept'] = 'application/json, */*'

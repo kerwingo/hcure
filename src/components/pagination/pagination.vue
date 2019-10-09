@@ -3,30 +3,55 @@
     @size-change="handleSizeChange"
     @current-change="handleCurrentChange"
     background
-    :current-page="currentPage"
+    :current-page="cp"
     :page-sizes="pageSizes"
-    :page-size="pageSize"
+    :page-size="pg"
     layout="total, sizes, prev, pager, next, jumper"
-    :total="total">
+    :total="tot">
   </el-pagination>
 </template>
 <script>
 export default{
+  props: {
+    total: {
+      type: Number,
+      default: 10
+    },
+    currentPage: {
+      type: Number,
+      default: 0
+    },
+    pagesize: {
+      type: Number,
+      default: 10
+    }
+  },
   data () {
     return {
-      total: 50,
-      currentPage: 1,
-      pageSize: 10,
-      pageSizes: [15, 30, 60]
+      tot: this.total,
+      cp: this.currentPage,
+      pg: this.pagesize,
+      pageSizes: [this.pagesize, 30, 50]
+    }
+  },
+  watch: {
+    total: function (val) {
+      this.tot = val
+    },
+    currentPage: function (val) {
+      this.cp = val
+    },
+    pagesize: function (val) {
+      this.pg = val
     }
   },
   methods: {
     handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
-      this.pageSize = val
+      this.pg = val
+      this.$emit('handleSizeChange', val)
     },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      this.$emit('handleCurrentChange', val)
     }
   }
 }

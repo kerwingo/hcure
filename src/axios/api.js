@@ -12,6 +12,10 @@ export function alert (params, type = 'success') {
   })
 }
 /*
+* 首页
+ */
+
+/*
 * 用户相关
 */
 export function login (data = {}) { // 登录
@@ -93,6 +97,13 @@ export function imInfo (data) { // 获取登录医生用户的环信账号信息
   })
 }
 
+export function archInfo (data = {}) { // 获取登录医生的职称
+  return axios({
+    url: 'arch/info',
+    method: 'post',
+    data: {...baseDate, 'data': data}
+  })
+}
 /*
 线下问询
 */
@@ -148,6 +159,13 @@ export function itemsPage (data) { // 获取本机构检查项目列表
     data: {...baseDate, 'data': data}
   })
 }
+export function itemsInfo (data) { // 根据项目ID获取项目信息
+  return axios({
+    url: 'items/info',
+    method: 'post',
+    data: {...baseDate, 'data': data}
+  })
+}
 export function scriptsPage (data) { // 获取本机构药方列表
   return axios({
     url: 'scripts/page',
@@ -157,7 +175,7 @@ export function scriptsPage (data) { // 获取本机构药方列表
 }
 export function drugsList (data) { // 根据药方ID获取本机构中药药品列表
   return axios({
-    url: 'drugs/list',
+    url: 'script/drugs/list',
     method: 'post',
     data: {...baseDate, 'data': data}
   })
@@ -172,6 +190,13 @@ export function drugsPage (data) { // 搜索本机构药品
 export function drugsInfo (data) { // 根据ID获取药品信息
   return axios({
     url: 'drugs/info',
+    method: 'post',
+    data: {...baseDate, 'data': data}
+  })
+}
+export function unitsList (data) { // 获取所有的剂量单位
+  return axios({
+    url: 'units/list',
     method: 'post',
     data: {...baseDate, 'data': data}
   })

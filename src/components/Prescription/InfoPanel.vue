@@ -33,10 +33,10 @@
                     </thead>
                   <tbody>
                       <tr v-for="(item,index) in listTwo" :key="'listTwo'+index" @click="addItem('xy',item)">
-                        <td>{{item.name}}</td>
-                        <td>{{item.jx}}</td>
-                        <td>{{item.gg}}</td>
-                        <td>{{item.bx}}</td>
+                        <td>{{item.title}}</td>
+                        <td>{{item.formName}}</td>
+                        <td>{{item.spec}}</td>
+                        <td>{{item.returned ===0?"不可报销":"可报销"}}</td>
                       </tr>
                   </tbody>
                 </table>
@@ -52,13 +52,20 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="(item,index) in listThree" :key="'listThree'+index" @click="addItem('yf',item.data)">
-                  <td>{{item.name}}</td>
-                  <td>{{item.zz}}</td>
-                  <td>{{item.zl}}</td>
+                <tr v-for="(item,index) in listThree" :key="'listThree'+index" @click="addItem('yf',item)">
+                  <td>{{item.scriptName}}</td>
+                  <td>{{item.indications}}</td>
+                  <td>{{item.goodsCount}}</td>
                 </tr>
                 </tbody>
               </table>
+            </div>
+            <div class="ideal" v-show="panelType ==='zy'">
+              <ul class="list">
+                <li v-for="(item,index) in listFour" :key="'listFour'+index" @click="addItem('zy',item)">
+                  {{item.drugName}}
+                </li>
+              </ul>
             </div>
             <pagination :total="total" :currentPage="currentPage" @getCurrentPage="getCurrentPage"></pagination>
           </div>
@@ -77,7 +84,9 @@
 import pagination from '@/components/pagination/pagination2'
 import {
   getDiagdescs,
-  itemsPage
+  itemsPage,
+  scriptsPage,
+  drugsPage
 } from '@/axios/api'
 export default {
   name: 'InfoPanel',
@@ -94,128 +103,9 @@ export default {
       placeholder: '请输入诊断描述',
       keyword: '',
       resultTips: '搜索结果：',
-      listOne: [
-        '感冒发烧1',
-        '感冒发烧',
-        '感冒发烧',
-        '感冒发烧',
-        '感冒发烧7'
-      ],
-      listTwo: [{
-        name: '阿莫西林1',
-        jx: '100g',
-        gg: '100',
-        bx: '可报销'
-      },
-      {
-        name: '阿莫西林2',
-        jx: '100g',
-        gg: '100',
-        bx: '不可报销'
-      }
-      ],
-      listThree: [
-        {name: '传统秘方',
-          zz: '胃病',
-          zl: '6种',
-          data: [
-            {c_name: '南天竹叶2',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶3',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶4',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶5',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶6',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶7',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'}
-          ]
-        },
-        {name: '传统秘方2',
-          zz: '胃病2',
-          zl: '7种',
-          data: [
-            {c_name: '南天竹叶1',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶2',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶3',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶7',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'}
-          ]},
-        {name: '传统秘方2',
-          zz: '胃病2',
-          zl: '8种',
-          data: [
-            {c_name: '南天竹叶1',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶2',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶3',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶4',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶5',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'},
-            {c_name: '南天竹叶8',
-              c_sl: '5g',
-              c_dj: '1',
-              c_zje: '5'}
-          ]}
-      ],
+      listOne: [],
+      listTwo: [],
+      listThree: [],
       listFour: [],
       loading: false,
       isResult: false,
@@ -257,6 +147,12 @@ export default {
           this.tit2 = '中药汤剂'
           this.placeholder = '请输入药方名称'
           this.emptyTips = '暂无此药方  请更换其他药方'
+          return
+        case 'zy':
+          this.tit1 = '添加药品'
+          this.tit2 = '中药汤剂'
+          this.placeholder = '请输入药方名称'
+          this.emptyTips = '暂无此药品'
       }
     },
     doSearch () {
@@ -268,35 +164,65 @@ export default {
         'limit': this.pageSize,
         'keyword': this.keyword
       }
-      switch (this.panelType) {
-        case 'zd':
-          getDiagdescs(data).then(res => {
-            if (Number(res.data.data.total) === 0 || res.data.data.list === null || res.data.data.list.length === 0) {
-              this.isResult = false
-            } else {
-              this.listOne = res.data.data.list
-              this.total = Number(res.data.data.total)
-              this.isResult = true
-            }
-            this.loading = false
-          }).catch(
-            this.loading = false
-          )
-          return
-        case 'xy':
-          itemsPage(data).then(res => {
-            if (Number(res.data.data.total) === 0 || res.data.data.list === null || res.data.data.list.length === 0) {
-              this.isResult = false
-            } else {
-              this.listOne = res.data.data.list
-              this.total = Number(res.data.data.total)
-              this.isResult = true
-            }
-            this.loading = false
-          }).catch(
-            this.loading = false
-          )
-      }
+      setTimeout(() => {
+        switch (this.panelType) {
+          case 'zd':
+            getDiagdescs(data).then(res => {
+              if (Number(res.data.data.total) === 0 || res.data.data.list === null || res.data.data.list.length === 0) {
+                this.isResult = false
+              } else {
+                this.listOne = res.data.data.list
+                this.total = Number(res.data.data.total)
+                this.isResult = true
+              }
+              this.loading = false
+            }).catch(
+              this.loading = false
+            )
+            return
+          case 'xy':
+            itemsPage(data).then(res => {
+              if (Number(res.data.data.total) === 0 || res.data.data.list === null || res.data.data.list.length === 0) {
+                this.isResult = false
+              } else {
+                this.listTwo = res.data.data.list
+                this.total = Number(res.data.data.total)
+                this.isResult = true
+              }
+              this.loading = false
+            }).catch(
+              this.loading = false
+            )
+            return
+          case 'yf':
+            scriptsPage(data).then(res => {
+              if (Number(res.data.data.total) === 0 || res.data.data.list === null || res.data.data.list.length === 0) {
+                this.isResult = false
+              } else {
+                this.listThree = res.data.data.list
+                this.total = Number(res.data.data.total)
+                this.isResult = true
+              }
+              this.loading = false
+            }).catch(
+              this.loading = false
+            )
+            return
+          case 'zy':
+            drugsPage(data).then(res => {
+              if (Number(res.data.data.total) === 0 || res.data.data.list === null || res.data.data.list.length === 0) {
+                this.isResult = false
+              } else {
+                this.listFour = res.data.data.list
+                this.total = Number(res.data.data.total)
+                this.isResult = true
+              }
+              this.loading = false
+            }).catch(
+              this.loading = false
+            )
+        }
+      }, 700)
     },
     getCurrentPage (val) {
       this.currentPage = val
@@ -307,23 +233,11 @@ export default {
       } else {
         this.offset = (val - 1) * this.pageSize
       }
-      this.inquire()
+      this.doSearch()
     },
     addItem (type, data) {
       this.$emit('addItem', type, data)
-      switch (type) {
-        case 'zd':
-      }
     }
-    /* addZd (type, data) {
-      this.$emit('addZd', data)
-    },
-    addXy (data) {
-      this.$emit('addXy', data)
-    },
-    addZy (data) {
-      this.$emit('addZy', data)
-    } */
   },
   mounted () {
   }
@@ -414,7 +328,7 @@ export default {
       .ideal{
         display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: start;
         padding:0 0 30px 0;
         min-height: 400px;
         box-sizing: border-box;

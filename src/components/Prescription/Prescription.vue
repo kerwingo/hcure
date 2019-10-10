@@ -56,8 +56,8 @@
       <div class="medical">
         <div class="tabs-wrap">
           <ul class="tabs">
-            <li v-for="(tag,index) in tabs" :key="'index'+index" @click="toggleTabs(index)" :class="{'active':index==nowIndex}">
-              {{tag}}
+            <li v-for="(tag,index) in tabs" :key="'index'+index" @click="toggleTabs(index)" :class="{'active':index==nowIndex}" v-show="tag.category === doctorCategory || doctorCategory === 2">
+              {{tag.text}}
             </li>
           </ul>
           <div class="tabs-block">
@@ -75,47 +75,47 @@
                   label="项目名称"
                   width="">
                   <template slot-scope="scope">
-                    {{ scope.row.m_name }}
+                    {{ scope.row.title }}
                   </template>
                 </el-table-column>
                 <el-table-column
                   label="剂型"
                   width="70">
                   <template slot-scope="scope">
-                    {{ scope.row.m_jx }}
+                    {{ scope.row.formName }}
                   </template>
                 </el-table-column>
                 <el-table-column
                   label="规格"
                   width="">
                   <template slot-scope="scope">
-                    {{ scope.row.m_gg }}
+                    {{ scope.row.spec }}
                   </template>
                 </el-table-column>
                 <el-table-column
                   label="关联"
                   width="80">
                   <template slot-scope="scope">
-                    <el-input v-model="gl_input"></el-input>
+                    <el-input v-model="scope.row.link"></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column
                   label="单次剂量"
                   width="80">
                   <template slot-scope="scope">
-                    {{ scope.row.m_dcjl}}
+                    <el-input v-model="scope.row.dose"></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column
                   label="剂量单位"
                   width="120">
                   <template slot-scope="scope">
-                    <el-select v-model="scope.se_value1" placeholder="请选择">
+                    <el-select v-model="scope.row.doseunit" placeholder="请选择">
                       <el-option
-                        v-for="item in options"
+                        v-for="item in options.units"
                         :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
+                        :label="item.title"
+                        :value="item.id">
                       </el-option>
                     </el-select>
                   </template>
@@ -124,9 +124,9 @@
                   label="频次"
                   width="120">
                   <template slot-scope="scope">
-                    <el-select v-model="se_value1" placeholder="请选择">
+                    <el-select v-model="scope.row.genfreq" placeholder="请选择">
                       <el-option
-                        v-for="item in options"
+                        v-for="item in options.genfreq"
                         :key="item.value"
                         :label="item.label"
                         :value="item.value">
@@ -138,9 +138,9 @@
                   label="用法"
                   width="120">
                   <template slot-scope="scope">
-                    <el-select v-model="se_value1" placeholder="请选择">
+                    <el-select v-model="scope.row.way" placeholder="请选择">
                       <el-option
-                        v-for="item in options"
+                        v-for="item in options.way"
                         :key="item.value"
                         :label="item.label"
                         :value="item.value">
@@ -152,30 +152,30 @@
                   label="疗程"
                   width="50">
                   <template slot-scope="scope">
-                    {{ scope.row.m_lc}}
+                    <el-input v-model="scope.row.course"></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column
                   label="单价"
                   width="70">
                   <template slot-scope="scope">
-                    {{ scope.row.m_dj}}
+                    {{ scope.row.price}}
                   </template>
                 </el-table-column>
                 <el-table-column
                   label="数量"
                   width="50">
                   <template slot-scope="scope">
-                    {{ scope.row.m_sl}}
+                    <el-input v-model="scope.row.amount"></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column
                   label="滴速"
                   width="120">
                   <template slot-scope="scope">
-                    <el-select v-model="se_value1" placeholder="请选择">
+                    <el-select v-model="scope.row.dropspeed" placeholder="请选择">
                       <el-option
-                        v-for="item in options"
+                        v-for="item in options.dropspeed"
                         :key="item.value"
                         :label="item.label"
                         :value="item.value">
@@ -187,21 +187,21 @@
                   label="包装单位"
                   width="90">
                   <template slot-scope="scope">
-                    {{ scope.row.m_bzdw}}
+                    {{ scope.row.itemunit}}
                   </template>
                 </el-table-column>
                 <el-table-column
                   label="总金额"
                   width="80">
                   <template slot-scope="scope">
-                    {{ scope.row.m_zje}}
+                    {{ scope.row.total}}
                   </template>
                 </el-table-column>
                 <el-table-column
                   label="报销"
                   width="70">
                   <template slot-scope="scope">
-                    {{ scope.row.m_bx}}
+                    {{ scope.row.returned===0?"不可报销":"可报销"}}
                   </template>
                 </el-table-column>
               </el-table>
@@ -225,28 +225,28 @@
                       label="药品名称"
                       width="">
                       <template slot-scope="scope">
-                        {{ scope.row.c_name }}
+                        {{ scope.row.drugName }}
                       </template>
                     </el-table-column>
                     <el-table-column
                       label="数量"
                       width="">
                       <template slot-scope="scope">
-                        {{ scope.row.c_sl }}
+                        {{ scope.row.num }}
                       </template>
                     </el-table-column>
                     <el-table-column
                       label="单价"
                       width="">
                       <template slot-scope="scope">
-                        {{ scope.row.c_dj }}
+                        {{ scope.row.price }}
                       </template>
                     </el-table-column>
                     <el-table-column
                       label="总金额"
                       width="">
                       <template slot-scope="scope">
-                        {{ scope.row.c_zje }}
+                        {{ scope.row.totalMoney }}
                       </template>
                     </el-table-column>
                   </el-table>
@@ -278,7 +278,7 @@
           </div>
         </div>
       </div>
-      <div class="history">
+      <div class="history" v-show="false">
         <div class="main">
           <el-row class="text-item">
             <el-col :span="5"><div class="tit" ><span style="display: inline-block;color: red;font-weight: bold;font-size: 20px;position: relative;top: 5px;margin-right: 3px;">*</span> 医嘱：</div></el-col>
@@ -324,6 +324,14 @@ import InfoPanel from '@/components/Prescription/InfoPanel'
 import checkSend from '@/components/Prescription/checkSend'
 import printJS from 'print-js'
 import {mapGetters, mapActions} from 'vuex'
+
+import {
+  itemsInfo,
+  drugsList,
+  drugsInfo,
+  archInfo,
+  unitsList
+} from '@/axios/api'
 export default {
   components: {
     pagination: pagination,
@@ -365,55 +373,32 @@ export default {
       msg: 'chatbox',
       dialogVisible: false,
       innerDialogVisible: false,
-      medicalHistory: '海末次综合症',
+      medicalHistory: '阿尔兹海默症',
       isAdd: false,
       prsDate: '2019年8月1日',
       dynamicTags: [],
+      doctorCategory: 2,
       tabs: [
-        '治疗/药品',
-        '中药汤剂'
+        {
+          text: '治疗/药品',
+          category: 0
+        },
+        {
+          text: '中药汤剂',
+          category: 1
+        }
       ],
       activeName: 'second',
       nowIndex: 0, // 默认第一个tab为激活状态
-      gl_input: '',
-      options: [
-        {value: '每天一次',
-          label: '每天一次'},
-        {value: '每天二次',
-          label: '每天二次'}
-      ],
-      se_value1: '',
-      westernDataOption: {
-        'jldw': [{
-          value: '毫升',
-          label: '毫升'
-        },
-        {
-          value: '毫升',
-          label: '毫升'
-        }]
+      options: {
+        units: [],
+        genfreq: [],
+        way: [],
+        dropspeed: []
       },
       westernData: [
-        /* {
-          m_name: '***药品',
-          m_jx: '液体',
-          m_gg: '25毫升/瓶',
-          m_gl: '1',
-          m_dcjl: '200',
-          m_jldw: '毫升',
-          m_pc: '每天1次',
-          m_yf: '静脉滴注',
-          m_lc: '1',
-          m_dj: '566',
-          m_sl: '2',
-          m_ds: '15滴/分',
-          m_bzdw: '**!/分',
-          m_zje: '688',
-          m_bx: '可报销'
-        } */
       ],
       tcmData: [
-
       ],
       nowTcmData: 0,
       c_fs: '',
@@ -433,6 +418,7 @@ export default {
     }
   },
   mounted () {
+    this.baseInfo()
   },
   methods: {
     closeDialog () {
@@ -471,55 +457,81 @@ export default {
           return
         case 'yf':
           this.addYf(data)
+          return
+        case 'zy':
+          this.addZy(data)
       }
     },
     addZd (data) {
       this.dynamicTags.push(data)
     },
     addXy (data) {
-      let item = {
-        link: '', // 关联
-        dose: '', // 单次剂量
-        doseunitname: '', // 剂量单位名称
-        genfreqname: '', // 频次名称
-        wayname: '', // 用法名称
-        dropspeedname: '', // 滴速名称
-        course: '', // 疗程
-        amount: '' // 数量
+      console.log(data)
+      let params = {
+        'id': data.target,
+        'type': data.type
       }
-      item.m_name = data.name
-      item.m_jx = data.jx
-      item.m_gg = data.gg
-      item.m_bx = data.bx
-      this.westernData.push(item)
+      itemsInfo(params).then(res => {
+        this.westernData.push(res.data.data)
+      })
     },
     addYf (data) {
-      let temp1 = []
-      let temp2 = []
-      let temp3 = []
-      for (let i = 0; i < data.length; i++) {
-        if ((i % 3) === 3 || (i % 3) === 0) {
-          temp1.push(data[i])
-        } else if ((i % 3) === 2) {
-          temp3.push(data[i])
-        } else if ((i % 3) === 1) {
-          temp2.push(data[i])
-        }
+      if (data.id) {
+        let param = {'id': data.id}
+        drugsList(param).then(res => {
+          console.log(res)
+          let data2 = res.data.data
+          let temp1 = []
+          let temp2 = []
+          let temp3 = []
+          for (let i = 0; i < data2.length; i++) {
+            if ((i % 3) === 3 || (i % 3) === 0) {
+              temp1.push(data2[i])
+            } else if ((i % 3) === 2) {
+              temp3.push(data2[i])
+            } else if ((i % 3) === 1) {
+              temp2.push(data2[i])
+            }
+          }
+          this.tcmData = [temp1, temp2, temp3]
+        })
       }
-      this.tcmData = [temp1, temp2, temp3]
     },
-    getMax (num1, num2, num3) {
-      let max = num1
-      if (num1 > num2) {
-        max = num1
-      } else {
-        max = num2
+    addZy (data) {
+      if (data.id) {
+        let param = {'id': data.id}
+        drugsInfo(param).then(res => {
+          console.log(res)
+        })
       }
-      if (max > num3) {
-        return max
+    },
+    getMin (num1, num2, num3) {
+      let min = num1
+      if (num1 === num2 || num1 < num2) {
+        min = num1
+      } else {
+        min = num2
+      }
+      if (min === num3 || min < num3) {
+        return min
       } else {
         return num3
       }
+    },
+    baseInfo () {
+      archInfo().then(res => {
+        if (res.data.data.category !== null) {
+          this.doctorCategory = Number(res.data.category)
+          if (Number(res.data.category) !== 2) {
+            this.nowIndex = res.data.category
+          }
+        }
+        console.log(this.doctorCategory)
+      })
+      unitsList().then(res => {
+        console.log(res.data.data)
+        this.options.units = res.data.data
+      })
     },
     goPrint () {
       this.prescription = false
@@ -671,7 +683,7 @@ export default {
       }
     }
     .tabs-block{
-      box-shadow:0px -1px 9px 0px rgba(234,234,234,1);
+      //box-shadow:0px -1px 9px 0px rgba(234,234,234,1);
       border-radius:3px 3px 0px 0px;
       .divTab {
         .add-item {

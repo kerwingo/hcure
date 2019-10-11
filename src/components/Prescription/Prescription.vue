@@ -46,7 +46,7 @@
                     <span class="clear" @click="dynamicTags=[]">清空</span>
                     <span class="add" @click="openPanel('zd',true)">新增</span>
                   </div>
-                  <p class="limit">10个标签以内</p>
+                  <p class="limit">5个标签以内</p>
                 </div>
               </div>
             </el-col>
@@ -326,6 +326,8 @@ import printJS from 'print-js'
 import {mapGetters, mapActions} from 'vuex'
 
 import {
+  alert,
+  notify,
   itemsInfo,
   drugsList,
   drugsInfo,
@@ -441,6 +443,7 @@ export default {
     },
     deleteRow (index, rows) {
       rows.splice(index, 1)
+      this.getMin(...this.tcmData)
       console.log(this.tcmData)
     },
     openPanel (type, display) {
@@ -463,7 +466,25 @@ export default {
       }
     },
     addZd (data) {
-      this.dynamicTags.push(data)
+      if (this.dynamicTags.length === 0) {
+        this.dynamicTags.push(data)
+        alert('标签添加成功', 'success')
+      } else if (this.dynamicTags.length === 5) {
+        alert('添加失败，标签最多添加五个', 'success')
+      } else {
+        let dup = false
+        for (let i = 0; i < this.dynamicTags.length; i++) {
+          if (data.description === this.dynamicTags[i].description) {
+            dup = true
+          }
+        }
+        if (dup) {
+          alert('添加失败，标签重复', 'warning')
+        } else {
+          this.dynamicTags.push(data)
+          alert('标签添加成功', 'success')
+        }
+      }
     },
     addXy (data) {
       console.log(data)
@@ -479,21 +500,27 @@ export default {
       if (data.id) {
         let param = {'id': data.id}
         drugsList(param).then(res => {
-          console.log(res)
           let data2 = res.data.data
-          let temp1 = []
-          let temp2 = []
-          let temp3 = []
-          for (let i = 0; i < data2.length; i++) {
-            if ((i % 3) === 3 || (i % 3) === 0) {
-              temp1.push(data2[i])
-            } else if ((i % 3) === 2) {
-              temp3.push(data2[i])
-            } else if ((i % 3) === 1) {
-              temp2.push(data2[i])
+          if (this.tcmData.length === 0) {
+            let temp1 = []
+            let temp2 = []
+            let temp3 = []
+            for (let i = 0; i < data2.length; i++) {
+              if ((i % 3) === 3 || (i % 3) === 0) {
+                temp1.push(data2[i])
+              } else if ((i % 3) === 2) {
+                temp3.push(data2[i])
+              } else if ((i % 3) === 1) {
+                temp2.push(data2[i])
+              }
+            }
+            this.tcmData = [temp1, temp2, temp3]
+          } else {
+            for (let i = 0; i < data2.length; i++) {
+              this.tcmData[this.nowTcmData].push(data2[i])
             }
           }
-          this.tcmData = [temp1, temp2, temp3]
+          this.getMin(...this.tcmData)
         })
       }
     },
@@ -501,22 +528,14 @@ export default {
       if (data.id) {
         let param = {'id': data.id}
         drugsInfo(param).then(res => {
-          console.log(res)
+          this.tcmData[this.nowTcmData].push(res.data.data)
+          this.getMin(...this.tcmData)
         })
       }
     },
-    getMin (num1, num2, num3) {
-      let min = num1
-      if (num1 === num2 || num1 < num2) {
-        min = num1
-      } else {
-        min = num2
-      }
-      if (min === num3 || min < num3) {
-        return min
-      } else {
-        return num3
-      }
+    getMin (arr1, arr2, arr3) {
+      let arr = [arr1.length, arr2.length, arr3.length]
+      this.nowTcmData = arr.indexOf(Math.min.apply(Math, arr))
     },
     baseInfo () {
       archInfo().then(res => {

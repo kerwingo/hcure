@@ -6,9 +6,9 @@
           <div class="search-wrap">
             <div class="input-wrap">
               <i class="icon-search el-icon-search"></i>
-              <input type="text" :placeholder = "placeholder" autofocus  v-model="keyword" @keyup.enter="doSearch">
+              <input type="text" :placeholder = "placeholder" autofocus  v-model="keyword" @keyup.enter="doSearch(true)">
             </div>
-            <el-button class="search-btn" @click.native.prevent="doSearch">查询</el-button>
+            <el-button class="search-btn" @click.native.prevent="doSearch(true)">查询</el-button>
           </div>
         <div class="result-wrap" v-loading="loading">
           <p class="r-tit">{{resultTips}}</p>
@@ -67,9 +67,9 @@
                 </li>
               </ul>
             </div>
-            <pagination :total="total" :currentPage="currentPage" @getCurrentPage="getCurrentPage"></pagination>
+            <pagination :pages="pages" :currentPage="currentPage" @getCurrentPage="getCurrentPage"></pagination>
           </div>
-          <div class="non-ideal" v-show="!isResult">
+          <div class="non-ideal" v-show="noResult">
               <div>
                 <img src="@/static/img/history.png" alt="">
               </div>
@@ -109,8 +109,9 @@ export default {
       listFour: [],
       loading: false,
       isResult: false,
-      total: 0,
-      pageSize: 10,
+      noResult: true,
+      pages: 0,
+      pageSize: 1,
       offset: 0,
       emptyTips: '您对病症的描述不准确  请输入标准描述',
       currentPage: 1
@@ -120,6 +121,7 @@ export default {
     displayPanel (type, display) { // @type:string,弹窗类型; @display:true||false,控制弹窗的显示隐藏
       this.panelShow = display
       this.panelType = type
+      this.keyword = ''
       if (display) {
         this.currentPage = 1 // 初始化当前页
         this.loading = false
@@ -155,10 +157,14 @@ export default {
           this.emptyTips = '暂无此药品'
       }
     },
-    doSearch () {
-      // use inputValue do somethings
+    doSearch (reset) {
+      if (reset) {
+        this.offset = 0
+        this.currentPage = 1
+      }
       this.loading = true
       this.isResult = false
+      this.noResult = false
       let data = {
         'offset': this.offset,
         'limit': this.pageSize,
@@ -170,9 +176,10 @@ export default {
             getDiagdescs(data).then(res => {
               if (Number(res.data.data.total) === 0 || res.data.data.list === null || res.data.data.list.length === 0) {
                 this.isResult = false
+                this.noResult = true
               } else {
                 this.listOne = res.data.data.list
-                this.total = Number(res.data.data.total)
+                this.pages = Number(res.data.data.pages)
                 this.isResult = true
               }
               this.loading = false
@@ -184,9 +191,10 @@ export default {
             itemsPage(data).then(res => {
               if (Number(res.data.data.total) === 0 || res.data.data.list === null || res.data.data.list.length === 0) {
                 this.isResult = false
+                this.noResult = true
               } else {
                 this.listTwo = res.data.data.list
-                this.total = Number(res.data.data.total)
+                this.pages = Number(res.data.data.pages)
                 this.isResult = true
               }
               this.loading = false
@@ -198,9 +206,10 @@ export default {
             scriptsPage(data).then(res => {
               if (Number(res.data.data.total) === 0 || res.data.data.list === null || res.data.data.list.length === 0) {
                 this.isResult = false
+                this.noResult = true
               } else {
                 this.listThree = res.data.data.list
-                this.total = Number(res.data.data.total)
+                this.pages = Number(res.data.data.pages)
                 this.isResult = true
               }
               this.loading = false
@@ -212,9 +221,10 @@ export default {
             drugsPage(data).then(res => {
               if (Number(res.data.data.total) === 0 || res.data.data.list === null || res.data.data.list.length === 0) {
                 this.isResult = false
+                this.noResult = true
               } else {
                 this.listFour = res.data.data.list
-                this.total = Number(res.data.data.total)
+                this.pages = Number(res.data.data.pages)
                 this.isResult = true
               }
               this.loading = false
@@ -222,7 +232,7 @@ export default {
               this.loading = false
             )
         }
-      }, 700)
+      }, 500)
     },
     getCurrentPage (val) {
       this.currentPage = val
@@ -305,6 +315,7 @@ export default {
       }
     }
     .result-wrap {
+      min-height: 400px;
       .r-tit{
         color:rgba(170,170,170,1);
         font-size: 22px;

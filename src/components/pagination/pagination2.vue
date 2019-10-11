@@ -1,7 +1,7 @@
 <template>
   <div class="pagination">
     <div class="count">
-      共{{Math.ceil(tot/pageSize)}}页 第{{cp}}页
+      共{{pg}}页 第{{cp}}页
     </div>
     <div class="opr">
         <span class="home" @click="handleCurrentChange('home')">回到首页</span>
@@ -13,7 +13,7 @@
 <script>
 export default{
   props: {
-    total: {
+    pages: {
       type: Number,
       default: 10
     },
@@ -24,15 +24,16 @@ export default{
   },
   data () {
     return {
-      tot: this.total,
+      pg: this.pages, // 这里的total实际上
       cp: this.currentPage,
       pageSize: 10,
       pageSizes: [15, 30, 60]
     }
   },
   watch: {
-    total: function (val) {
-      this.tot = val
+    pages: function (val) {
+      this.pg = val
+      console.log('tot', this.tot)
     },
     currentPage: function (val) {
       this.cp = val
@@ -50,11 +51,12 @@ export default{
       } else if (opr === 'prev') {
         this.cp = (this.cp - 1) > 0 ? this.cp - 1 : this.cp
       } else if (opr === 'next') {
-        this.cp = (this.cp + 1) <= this.tot ? this.cp + 1 : this.cp
+        this.cp = this.cp < this.pages ? this.cp + 1 : this.cp
       }
-      if (flag === this.cp) { return }
-      console.log(`当前页: ${this.cp}`)
-      this.$emit('getCurrentPage', this.cp)
+      if (flag !== this.cp) {
+        console.log(`当前页: ${this.cp}`)
+        this.$emit('getCurrentPage', this.cp)
+      }
     }
   }
 }

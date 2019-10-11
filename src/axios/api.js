@@ -11,6 +11,13 @@ export function alert (params, type = 'success') {
     type: type
   })
 }
+export function notify (params, type = 'success') {
+  notify({
+    title: '成功',
+    message: params,
+    type: type
+  });
+}
 /*
 * 首页
  */

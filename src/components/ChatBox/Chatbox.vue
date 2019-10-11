@@ -11,7 +11,7 @@
           <im></im>
         </div>
         <div class="aside-box">
-          <div class="history" @click="openInnerDialog('check')">
+          <div class="history disabled" @click="openInnerDialog('check')">
             <img src="@/static/img/history.png" alt="">
             <p>查看历史记录</p>
           </div>
@@ -179,6 +179,11 @@ export default {
         &>div{
           margin-bottom: 60px;
           cursor: pointer;
+          &.disabled {
+            pointer-events: none;
+            cursor: url('../../../static/img/disabled.jpg'),auto;
+            opacity: 0.7;
+          }
           p{
             color:rgba(115,115,115,1);
             line-height: 30px;

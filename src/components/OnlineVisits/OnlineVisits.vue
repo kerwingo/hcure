@@ -124,7 +124,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['SET_SICKER']),
+    ...mapActions(['SET_SICKER', 'SET_INQUIREID']),
     getRate () {
       rate().then(res => {
         this.rate = res.data.data
@@ -162,8 +162,7 @@ export default {
       this.sicker = sicker
       this['SET_SICKER'](sicker) // 保存到store
       if (sicker.closed === 0) {
-        inquiresOpen({'id': sicker.gid}).then(res => {
-        })
+        inquiresOpen({'id': sicker.gid}).then(res => {})
       }
     },
     closeDialog (val) {

@@ -1,5 +1,5 @@
 import axios from './http'
-import { Message } from 'element-ui'
+import { Message, Notification } from 'element-ui'
 let baseDate = {
   'code': '1',
   'flag': '2',
@@ -11,12 +11,12 @@ export function alert (params, type = 'success') {
     type: type
   })
 }
-export function notify (params, type = 'success') {
-  notify({
-    title: '成功',
+export function notify (params, type = 'success', tit) {
+  Notification({
+    title: tit,
     message: params,
     type: type
-  });
+  })
 }
 /*
 * 首页

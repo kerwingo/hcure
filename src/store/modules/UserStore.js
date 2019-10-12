@@ -7,11 +7,15 @@
 export default {
   state: {
     userInfo: null,
-    sicker:null,
+    sicker: null,
+    inquireid: ''
   },
   getters: {
     GET_USER_INFO (state) {
       return state.userInfo
+    },
+    GET_INQUIREID (state) {
+      return state.inquireid
     },
     GET_SICKER (state) {
       return state.sicker
@@ -23,6 +27,9 @@ export default {
     },
     SET_SICKER (state, data) {
       state.sicker = data
+    },
+    SET_INQUIREID (state, data) {
+      state.inquireid = data
     }
   },
   actions: {
@@ -31,6 +38,9 @@ export default {
     },
     SET_SICKER ({ commit }, data) {
       commit('SET_SICKER', data)
+    },
+    SET_INQUIREID ({ commit }, data) {
+      commit('SET_INQUIREID', data)
     }
   }
 }

@@ -18,7 +18,7 @@
                 type="textarea"
                 :rows="5"
                 placeholder="请输入内容"
-                v-model="medicalHistory"
+                v-model="symptoms"
                 :readonly="!isAdd"
                 maxlength="1000"
                 show-word-limit
@@ -230,9 +230,9 @@
                     </el-table-column>
                     <el-table-column
                       label="数量"
-                      width="">
+                      width="160">
                       <template slot-scope="scope">
-                        {{ scope.row.num }}
+                        <el-input-number v-model="scope.row.num" size="mini" @change="handleChange" :min="1" :max="100"></el-input-number>
                       </template>
                     </el-table-column>
                     <el-table-column
@@ -278,7 +278,7 @@
           </div>
         </div>
       </div>
-      <div class="history" v-show="false">
+      <div class="history" >
         <div class="main">
           <el-row class="text-item">
             <el-col :span="5"><div class="tit" ><span style="display: inline-block;color: red;font-weight: bold;font-size: 20px;position: relative;top: 5px;margin-right: 3px;">*</span> 医嘱：</div></el-col>
@@ -287,7 +287,7 @@
                 type="textarea"
                 :rows="5"
                 placeholder="请输入内容"
-                v-model="medicalHistory"
+                v-model="advice"
                 :readonly="!isAdd"
                 maxlength="1000"
                 show-word-limit
@@ -295,7 +295,7 @@
               </el-input>
             </el-col>
           </el-row>
-          <el-row class="text-item history-main">
+          <el-row class="text-item history-main" v-show="false">
             <el-col :span="5"><div class="tit">历史诊断记录：</div></el-col>
             <el-col :span="19">
               <div class="history-list">
@@ -332,7 +332,8 @@ import {
   drugsList,
   drugsInfo,
   archInfo,
-  unitsList
+  unitsList,
+  saveRxs
 } from '@/axios/api'
 export default {
   components: {
@@ -354,6 +355,22 @@ export default {
       if (this.GET_SICKER) {
         return this.GET_SICKER
       }
+    },
+    diagslist: function () {
+      let arr = []
+      this.dynamicTags.forEach(function (item) {
+        arr.push(item.descsId)
+      })
+      return arr
+    },
+    tcmList: function () {
+      let arr = []
+      this.tcmData.forEach(function (items) {
+        items.forEach(function (item) {
+          arr.push(item)
+        })
+      })
+      return arr
     }
   },
   watch: {
@@ -375,7 +392,7 @@ export default {
       msg: 'chatbox',
       dialogVisible: false,
       innerDialogVisible: false,
-      medicalHistory: '阿尔兹海默症',
+      symptoms: '',
       isAdd: false,
       prsDate: '2019年8月1日',
       dynamicTags: [],
@@ -395,7 +412,16 @@ export default {
       options: {
         units: [],
         genfreq: [],
-        way: [],
+        way: [
+          {
+            label: '一天一次',
+            value: '一天一次'
+          },
+          {
+            label: '一天两次',
+            value: '一天两次'
+          }
+        ],
         dropspeed: []
       },
       westernData: [
@@ -407,6 +433,7 @@ export default {
       c_ff: '',
       c_pc: '',
       c_ycyy: '',
+      advice: '',
       historyList: [
         {
           date: '2019-4-02 10:41:35',
@@ -447,7 +474,6 @@ export default {
       console.log(this.tcmData)
     },
     openPanel (type, display) {
-      console.log(this.westernData)
       this.$refs.InfoPanel.displayPanel(type, display)
     },
     addItem (type, data) {
@@ -468,9 +494,9 @@ export default {
     addZd (data) {
       if (this.dynamicTags.length === 0) {
         this.dynamicTags.push(data)
-        alert('标签添加成功', 'success')
+        notify('标签添加成功', 'success', '成功')
       } else if (this.dynamicTags.length === 5) {
-        alert('添加失败，标签最多添加五个', 'success')
+        notify('添加失败，标签最多添加五个', 'error', '失败')
       } else {
         let dup = false
         for (let i = 0; i < this.dynamicTags.length; i++) {
@@ -479,10 +505,10 @@ export default {
           }
         }
         if (dup) {
-          alert('添加失败，标签重复', 'warning')
+          notify('添加失败，标签重复', 'error', '失败')
         } else {
           this.dynamicTags.push(data)
-          alert('标签添加成功', 'success')
+          notify('标签添加成功', 'success', '成功')
         }
       }
     },
@@ -494,6 +520,7 @@ export default {
       }
       itemsInfo(params).then(res => {
         this.westernData.push(res.data.data)
+        notify('项目添加成功', 'success', '成功')
       })
     },
     addYf (data) {
@@ -515,9 +542,11 @@ export default {
               }
             }
             this.tcmData = [temp1, temp2, temp3]
+            notify('药方添加成功', 'success', '成功')
           } else {
             for (let i = 0; i < data2.length; i++) {
               this.tcmData[this.nowTcmData].push(data2[i])
+              notify('药方添加成功', 'success', '成功')
             }
           }
           this.getMin(...this.tcmData)
@@ -530,6 +559,7 @@ export default {
         drugsInfo(param).then(res => {
           this.tcmData[this.nowTcmData].push(res.data.data)
           this.getMin(...this.tcmData)
+          notify('项目/药品添加成功', 'success', '成功')
         })
       }
     },
@@ -552,9 +582,32 @@ export default {
         this.options.units = res.data.data
       })
     },
+    handleChange (value) {
+      console.log(value)
+    },
     goPrint () {
-      this.prescription = false
-      this.checkSend = true
+      this.saveRxs()
+    },
+    saveRxs () { // 保存处方
+      let data = {
+        sickid: this.sicker.sickid,
+        doctorid: '',
+        inquireid: this.sicker.gid,
+        content: this.symptoms,
+        diagslist: this.diagslist,
+        medicineslist: this.nowIndex === 0 ? this.westernData : this.tcmList,
+        vice: this.c_fs,
+        mea: this.c_ycyy,
+        freq: this.c_pc,
+        method: this.c_ff,
+        advice: this.advice,
+        rxstype: this.nowIndex
+      }
+      saveRxs(data).then(res => {
+        console.log('处方', res)
+        this.prescription = false
+        this.checkSend = true
+      })
     },
     printHtmlCustomStyle () {
       const style = '@page { margin: 0 } @media print { h1 { color: blue } }'// 直接写样式

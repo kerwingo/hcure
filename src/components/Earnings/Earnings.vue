@@ -35,7 +35,11 @@
         </template>-->
       </el-table-column>
     </el-table>
-    <pagination></pagination>
+    <pagination :total='totals'
+           v-show="list.length"
+           :pagesize="pageSize"
+           @handleSizeChange="handleSizeChange"
+           @handleCurrentChange="handleCurrentChange"></pagination>
   </div>
 </template>
 
@@ -48,36 +52,10 @@ export default {
   },
   data () {
     return {
-      list: [
-        {
-          buildtime: '1569466840000',
-          category: '0',
-          income: 1000,
-          balance: 1000,
-          comment: '0'
-        },
-        {
-          buildtime: '1569468840000',
-          category: '1',
-          income: 1000,
-          balance: 1000,
-          comment: '1'
-        },
-        {
-          buildtime: '1569466940000',
-          category: '2',
-          income: 1000,
-          balance: 1000,
-          comment: '2'
-        },
-        {
-          buildtime: '1569466850000',
-          category: '1',
-          income: 1000,
-          balance: 1000,
-          comment: '3'
-        }
-      ]
+      pageSize: 1,
+      totals: 0,
+      offset: '0',
+      list: []
     }
   },
   mounted () {
@@ -85,9 +63,29 @@ export default {
   },
   methods: {
     offlineinterrogation () {
-      offlineinterrogation().then(res => {
+      let data = {
+        'offset': this.offset,
+        'limit': this.pageSize
+      }
+      offlineinterrogation(data).then(res => {
         console.log(res.data.data)
+        this.list = res.data.data.list
+        this.totals = Number(res.data.data.total)
+        this.loading = false
       })
+    },
+    handleSizeChange (val) {
+      this.pageSize = val
+      this.offlineinterrogation()
+    },
+    handleCurrentChange (val) {
+      console.log(val)
+      if (val === 1) {
+        this.offset = 0
+      } else {
+        this.offset = (val - 1) * this.pageSize
+      }
+      this.offlineinterrogation()
     },
     resetDateFilter () {
       this.$refs.filterTable.clearFilter('date')

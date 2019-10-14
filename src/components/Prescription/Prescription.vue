@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="prescription" v-show="prescription">
+    <div id="" v-show="prescription">
       <div class="prescription" >
         <div class="main">
           <h3 class="p-tit">{{prscTit}}</h3>
@@ -164,9 +164,9 @@
                 </el-table-column>
                 <el-table-column
                   label="数量"
-                  width="50">
+                  width="115">
                   <template slot-scope="scope">
-                    <el-input v-model="scope.row.amount"></el-input>
+                    <el-input-number v-model="scope.row.amount" size="mini" @change="handleChange(scope,scope.row.amount)" :min="1" :max="100"></el-input-number>
                   </template>
                 </el-table-column>
                 <el-table-column
@@ -582,13 +582,16 @@ export default {
         this.options.units = res.data.data
       })
     },
-    handleChange (value) {
-      console.log(value)
+    handleChange (scope, val) {
+      scope.row.total = val * scope.row.price
+      console.log(this.westernData)
     },
     goPrint () {
       this.saveRxs()
     },
     saveRxs () { // 保存处方
+      this.prescription = false
+      this.checkSend = true
       let data = {
         sickid: this.sicker.sickid,
         doctorid: '',
@@ -912,5 +915,8 @@ export default {
   }
   .el-input__inner{
     padding: 0 5px;
+  }
+  .el-input-number--mini{
+    width: 93px;
   }
 </style>

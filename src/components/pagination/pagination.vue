@@ -24,6 +24,7 @@ export default{
     pagesize: {
       type: Number,
       default: 10
+
     }
   },
   data () {
@@ -60,5 +61,11 @@ export default{
 <style lang="less" scoped>
   .el-pagination{
     margin-top: 30px;
+  }
+</style>
+<style>
+  .el-pagination.is-background .el-pager li:not(.disabled).active{
+    background-color: #006e36c2;
+    color: #FFF;
   }
 </style>

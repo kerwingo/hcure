@@ -141,7 +141,7 @@ export default {
   methods: {
     initIm () {
       // im 登陆
-      this.im.login('test1', '123456')
+      this.im.login('123456xlk', '123456')
     },
     // 发送消息
     sendMessage () {

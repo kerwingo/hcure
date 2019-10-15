@@ -66,7 +66,7 @@
                 border
                 :data="westernData"
                 style="width: 100%">
-                <el-table-column label="" width="80">
+                <el-table-column label="" width="60">
                   <template slot-scope="scope">
                     <i class="el-icon-delete" @click="deleteRow(scope.$index, westernData)" style="cursor: pointer"></i>
                   </template>
@@ -94,21 +94,21 @@
                 </el-table-column>
                 <el-table-column
                   label="关联"
-                  width="80">
+                  width="60">
                   <template slot-scope="scope">
                     <el-input v-model="scope.row.link"></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column
                   label="单次剂量"
-                  width="80">
+                  width="60">
                   <template slot-scope="scope">
                     <el-input v-model="scope.row.dose"></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column
                   label="剂量单位"
-                  width="120">
+                  width="110">
                   <template slot-scope="scope">
                     <el-select v-model="scope.row.doseunit" placeholder="请选择">
                       <el-option
@@ -122,7 +122,7 @@
                 </el-table-column>
                 <el-table-column
                   label="频次"
-                  width="120">
+                  width="110">
                   <template slot-scope="scope">
                     <el-select v-model="scope.row.genfreq" placeholder="请选择">
                       <el-option
@@ -136,7 +136,7 @@
                 </el-table-column>
                 <el-table-column
                   label="用法"
-                  width="120">
+                  width="110">
                   <template slot-scope="scope">
                     <el-select v-model="scope.row.way" placeholder="请选择">
                       <el-option
@@ -230,9 +230,9 @@
                     </el-table-column>
                     <el-table-column
                       label="数量"
-                      width="160">
+                      width="150">
                       <template slot-scope="scope">
-                        <el-input-number v-model="scope.row.num" size="mini" @change="handleChange" :min="1" :max="100"></el-input-number>
+                        <el-input-number v-model="scope.row.num" size="mini" @change="handleChange(scope,scope.row.num)" :min="1" :max="100"></el-input-number>
                       </template>
                     </el-table-column>
                     <el-table-column
@@ -255,7 +255,9 @@
                   </div>
                 </div>
               </div>
-              <p class="change" @click="openPanel('yf',true)" v-show="isAdd">增加/修改药方</p>
+              <div style="text-align: center">
+                <p class="change" @click="openPanel('yf',true)" v-show="isAdd">增加/修改药方</p>
+              </div>
               <ul class="handleWrite">
                 <li>
                   <span>用药副数</span>
@@ -394,7 +396,7 @@ export default {
       innerDialogVisible: false,
       symptoms: '',
       isAdd: false,
-      prsDate: '2019年8月1日',
+      prsDate: this.$moment(new Date()).format('YYYY-MM-DD'),
       dynamicTags: [],
       doctorCategory: 2,
       tabs: [
@@ -426,8 +428,7 @@ export default {
       },
       westernData: [
       ],
-      tcmData: [
-      ],
+      tcmData: [[], [], []],
       nowTcmData: 0,
       c_fs: '',
       c_ff: '',
@@ -528,20 +529,16 @@ export default {
         let param = {'id': data.id}
         drugsList(param).then(res => {
           let data2 = res.data.data
-          if (this.tcmData.length === 0) {
-            let temp1 = []
-            let temp2 = []
-            let temp3 = []
+          if (this.tcmData[0].length === 0 && this.tcmData[1].length === 0 && this.tcmData[2].length === 0) {
             for (let i = 0; i < data2.length; i++) {
               if ((i % 3) === 3 || (i % 3) === 0) {
-                temp1.push(data2[i])
+                this.tcmData[0].push(data2[i])
               } else if ((i % 3) === 2) {
-                temp3.push(data2[i])
+                this.tcmData[2].push(data2[i])
               } else if ((i % 3) === 1) {
-                temp2.push(data2[i])
+                this.tcmData[1].push(data2[i])
               }
             }
-            this.tcmData = [temp1, temp2, temp3]
             notify('药方添加成功', 'success', '成功')
           } else {
             for (let i = 0; i < data2.length; i++) {
@@ -583,7 +580,14 @@ export default {
       })
     },
     handleChange (scope, val) {
-      scope.row.total = val * scope.row.price
+      if (scope.row.price) {
+        if (scope.row.total) {
+          scope.row.total = val * scope.row.price
+        }
+        if (scope.row.totalMoney) {
+          scope.row.totalMoney = val * scope.row.price
+        }
+      }
       console.log(this.westernData)
     },
     goPrint () {
@@ -612,17 +616,22 @@ export default {
         this.checkSend = true
       })
     },
-    printHtmlCustomStyle () {
-      const style = '@page { margin: 0 } @media print { h1 { color: blue } }'// 直接写样式
-      printJS({
-        printable: 'prescription', // 要打印内容的id
-        type: 'html',
-        style: style,
-        scanStyles: false
-      })
-    },
     cancel () {
       this.$emit('closeInnerDialog')
+    },
+    clearData () {
+      this.prescription = true
+      this.checkSend = false
+      this.symptoms = ''
+      this.dynamicTags = []
+      this.westernData = []
+      this.tcmData = [[], [], []]
+      this.nowTcmData = 0
+      this.c_fs = ''
+      this.c_ff = ''
+      this.c_pc = ''
+      this.c_ycyy = ''
+      this.advice = ''
     }
   }
 
@@ -634,7 +643,7 @@ export default {
   background:rgba(255,255,255,1);
   box-shadow:0px 0px 13px 0px rgba(223,230,234,0.57);
   .p-tit {
-    font-size: 32px;
+    font-size: 20px;
     font-weight: bold;
   }
   .line {
@@ -643,7 +652,7 @@ export default {
     border-bottom: 2px dashed #333333;
   }
   .case-info{
-    font-size: 22px;
+    font-size: 18px;
   }
   &>.main{
     width: 70%;
@@ -658,7 +667,7 @@ export default {
       margin: 30px 0 0 0 ;
       .tit {
         text-align: right;
-        font-size: 22px;
+        font-size: 16px;
         line-height: 30px;
         margin-right: 10px;
       }
@@ -676,11 +685,11 @@ export default {
           color: #565656;
           margin: 0 20px 20px 0;
           min-width: 135px;
-          height: 50px;
+          height: 40px;
           box-sizing: border-box;
           text-align: center;
-          line-height: 50px;
-          font-size: 18px;
+          line-height: 40px;
+          font-size: 14px;
           .el-tag__close {
             color: #999999;
             border: 1px solid #999999;
@@ -703,9 +712,9 @@ export default {
             span{
               display: inline-block;
               width:130px;
-              height:50px;
-              font-size:20px;
-              line-height:50px;
+              height:40px;
+              font-size:14px !important;
+              line-height:40px;
               margin-right: 10px;
               border-radius:3px;
               cursor: pointer;
@@ -721,7 +730,7 @@ export default {
           }
           .limit {
             color: #AAAAAA;
-            font-size:20px;
+            font-size:14px;
           }
         }
       }
@@ -741,14 +750,14 @@ export default {
       li {
         text-align: center;
         display: inline-block;
-        width:150px;
-        height:50px;
-        line-height: 50px;
+        width:120px;
+        height:40px;
+        line-height: 40px;
         color: #565656;
         background:#fff;
         box-shadow:0px 0px 13px 0px rgba(223,230,234,0.57);
         cursor: pointer;
-        font-size: 22px;
+        font-size: 16px;
         transition: 0.3s ease-in-out;
         &.active{
           background:rgba(67,190,127,1);
@@ -764,21 +773,23 @@ export default {
         .add-item {
           height:70px;
           background:rgba(255,255,255,1);
-          font-size:18px;
+          font-size:16px;
           color:rgba(67,190,127,1);
           line-height:70px;
           cursor: pointer;
           i {
-            margin: 0 5px 0 30px;
+            margin: 0 5px 0 22px;
           }
         }
         .change{
           color: #fff;
-          height:45px;
-          line-height: 45px;
+          height:40px;
+          line-height: 40px;
+          font-size: 14px;
           background:rgba(67,190,127,1);
           border-radius:3px;
-          width:180px;
+          padding: 0 20px;
+          display: inline-block;
           text-align: center;
           margin: 20px auto;
           cursor: pointer;
@@ -791,8 +802,9 @@ export default {
         justify-content: space-between;
         flex-wrap: wrap;
         .tcmData{
+          width: calc((100% - 30px)/3);
           margin: 5px;
-          box-shadow:0px -1px 9px 0px rgba(234,234,234,1);
+          //box-shadow:0px -1px 9px 0px rgba(234,234,234,1);
         }
       }
       .handleWrite{
@@ -807,7 +819,8 @@ export default {
           align-items: center;
           span{
             display: inline-block;
-            min-width: 90px;
+            min-width: 70px;
+            font-size: 14px;
           }
         }
       }
@@ -823,8 +836,8 @@ export default {
     min-width: 1000px;
     margin: 0 auto;
     .tit {
-      font-size: 22px;
-      line-height: 50px;
+      font-size: 16px;
+      line-height: 30px;
       text-align: right;
     }
     .history-main {
@@ -850,6 +863,7 @@ export default {
 }
 .operation {
   padding: 35px 0 40px 0;
+  font-size: 14px;
   span {
     display: inline-block;
     height:50px;
@@ -858,7 +872,8 @@ export default {
     border-radius:3px;
     min-width: 100px;
     cursor: pointer;
-    margin: 0 27px;
+    padding: 0 20px;
+    margin: 0 15px;
     &.cancel{
       color: #565656;
       background:rgba(229,229,229,1);
@@ -876,7 +891,7 @@ export default {
 </style>
 <style type="text/css">
   .el-table__empty-text{
-    font-size: 16px;
+    font-size: 14px;
   }
   .el-table--enable-row-transition .el-table__body td{
     text-align: center !important;
@@ -898,13 +913,13 @@ export default {
     background:rgba(67,190,127,1);
   }
    .el-textarea__inner{
-    font-size: 20px;
+    font-size: 14px !important;
   }
   .el-table .cell{
-    font-size: 18px;
+    font-size: 14px;
   }
   .el-table th>.cell{
-    font-size: 18px;
+    font-size: 14px !important;
   }
   .el-tag .el-tag__close{
     color: #999;

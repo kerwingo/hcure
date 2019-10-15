@@ -29,7 +29,7 @@
     <div class="innerDialog-wrap" v-show="innerDialogVisible">
         <div class="innerDialog" id="innerDialog">
             <span class="close" @click="closeInnerDialog"></span>
-            <prescription @closeInnerDialog = "closeInnerDialog" :types="types"></prescription>
+            <prescription @closeInnerDialog = "closeInnerDialog" ref="pres" :types="types"></prescription>
         </div>
     </div>
   </div>
@@ -88,6 +88,7 @@ export default {
     openInnerDialog (val) {
       this.types = val
       this.innerDialogVisible = true
+      this.$refs.pres.clearData()
     },
     closeInnerDialog () {
       this.innerDialogVisible = false

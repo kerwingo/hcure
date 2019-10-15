@@ -130,6 +130,12 @@ export default {
         this.rate = res.data.data
       })
     },
+    freshInquire () {
+      setInterval(() => {
+        this.offset = 0
+        this.inquire()
+      }, 1000 * 30)
+    },
     inquire () {
       this.loading = true
       let data = {
@@ -184,6 +190,7 @@ export default {
   mounted () {
     this.getRate()
     this.inquire()
+    this.freshInquire() // 定时刷新问询列表
   }
 }
 </script>

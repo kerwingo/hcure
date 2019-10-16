@@ -217,8 +217,8 @@ export default {
       position: relative;
       .close {
         display: inline-block;
-        width: 40px;
-        height: 40px;
+        width: 35px;
+        height: 35px;
         border-radius: 50%;
         overflow: hidden;
         background-image: url("../../static/img/close_2.png");

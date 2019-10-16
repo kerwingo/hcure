@@ -115,7 +115,7 @@
                         v-for="item in options.units"
                         :key="item.value"
                         :label="item.title"
-                        :value="item.id">
+                        :value="item.title">
                       </el-option>
                     </el-select>
                   </template>
@@ -317,14 +317,13 @@
       </div>
       <InfoPanel ref="InfoPanel" @addItem="addItem" ></InfoPanel>
     </div>
-    <checkSend v-show="checkSend"></checkSend>
+    <checkSend v-show="checkSend" :cacheData="cacheData" @reWrite="reWrite"></checkSend>
   </div>
 </template>
 <script>
 import pagination from '@/components/pagination/pagination'
 import InfoPanel from '@/components/Prescription/InfoPanel'
 import checkSend from '@/components/Prescription/checkSend'
-import printJS from 'print-js'
 import {mapGetters, mapActions} from 'vuex'
 
 import {
@@ -335,7 +334,8 @@ import {
   drugsInfo,
   archInfo,
   unitsList,
-  saveRxs
+  saveRxs,
+  diagdescsNum
 } from '@/axios/api'
 export default {
   components: {
@@ -366,13 +366,23 @@ export default {
       return arr
     },
     tcmList: function () {
-      let arr = []
+      var arr = []
+      var new_arr = []
       this.tcmData.forEach(function (items) {
         items.forEach(function (item) {
           arr.push(item)
         })
       })
-      return arr
+      new_arr = arr.map(o => {
+        return {
+          itemid: o.id,
+          title: o.drugName,
+          amount: o.amount,
+          price: o.price,
+          total: o.total
+        }
+      })
+      return new_arr
     }
   },
   watch: {
@@ -413,8 +423,7 @@ export default {
       nowIndex: 0, // 默认第一个tab为激活状态
       options: {
         units: [],
-        genfreq: [],
-        way: [
+        genfreq: [
           {
             label: '一天一次',
             value: '一天一次'
@@ -424,7 +433,26 @@ export default {
             value: '一天两次'
           }
         ],
-        dropspeed: []
+        way: [
+          {
+            label: '一次三粒',
+            value: '一次三粒'
+          },
+          {
+            label: '一次两粒',
+            value: '一次两粒'
+          }
+        ],
+        dropspeed: [
+          {
+            label: '100/s',
+            value: '100/s'
+          },
+          {
+            label: '50/s',
+            value: '50/s'
+          }
+        ]
       },
       westernData: [
       ],
@@ -435,6 +463,7 @@ export default {
       c_pc: '',
       c_ycyy: '',
       advice: '',
+      cacheData: null,
       historyList: [
         {
           date: '2019-4-02 10:41:35',
@@ -492,10 +521,16 @@ export default {
           this.addZy(data)
       }
     },
+    tagUsed (id) {
+      diagdescsNum({'id': id}).then(res => {
+        console.log('tag使用+1', res.data)
+      })
+    },
     addZd (data) {
       if (this.dynamicTags.length === 0) {
         this.dynamicTags.push(data)
         notify('标签添加成功', 'success', '成功')
+        this.tagUsed(data.descsId)
       } else if (this.dynamicTags.length === 5) {
         notify('添加失败，标签最多添加五个', 'error', '失败')
       } else {
@@ -509,6 +544,7 @@ export default {
           notify('添加失败，标签重复', 'error', '失败')
         } else {
           this.dynamicTags.push(data)
+          this.tagUsed(data.descsId)
           notify('标签添加成功', 'success', '成功')
         }
       }
@@ -591,11 +627,10 @@ export default {
       console.log(this.westernData)
     },
     goPrint () {
+      // rebuild
       this.saveRxs()
     },
     saveRxs () { // 保存处方
-      this.prescription = false
-      this.checkSend = true
       let data = {
         sickid: this.sicker.sickid,
         doctorid: '',
@@ -611,13 +646,18 @@ export default {
         rxstype: this.nowIndex
       }
       saveRxs(data).then(res => {
-        console.log('处方', res)
+        console.log('处方缓存成功', res)
+        this.cacheData = res.data.data
         this.prescription = false
         this.checkSend = true
       })
     },
     cancel () {
       this.$emit('closeInnerDialog')
+    },
+    reWrite () {
+      this.prescription = true
+      this.checkSend = false
     },
     clearData () {
       this.prescription = true

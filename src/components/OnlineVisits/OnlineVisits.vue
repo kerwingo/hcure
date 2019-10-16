@@ -24,7 +24,7 @@
           <th>结束情况</th>
           <th>处方笺</th>
         </tr>
-        <tr v-for="(item, index) in list" :key="index" v-loading="loading" element-loading-text="想健康 享乐康 更健康" :class="{'online':item.enquiry===0}">
+        <tr v-for="(item, index) in list" :key="index" v-loading="loading"  :class="{'online':item.enquiry===0}">
           <td><i class="el-icon-time" v-if="item.enquiry===0" style="position: relative;left: -20px"></i>{{item.buildtime | dateFormatter }}</td>
           <td>{{item.caption}}</td>
           <td>{{item.sex===0?'男':'女'}}</td>
@@ -167,7 +167,7 @@ export default {
       this.dialogVisible = true
       this.sicker = sicker
       this['SET_SICKER'](sicker) // 保存到store
-      if (sicker.closed === 0) {
+      if (sicker.enquiry === 0) {
         inquiresOpen({'id': sicker.gid}).then(res => {})
       }
     },

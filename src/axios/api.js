@@ -114,9 +114,16 @@ export function archInfo (data = {}) { // 获取登录医生的职称
 /*
 线下问询
 */
-export function saveRxs (data) { // 医生提交处方单
+export function commitRxs (data) { // 医生提交处方单，后台正式处理发送给患者
   return axios({
-    url: 'inquiresRxs/saveRxs',
+    url: 'inquiresRxs/commit',
+    method: 'post',
+    data: {...baseDate, 'data': data}
+  })
+}
+export function saveRxs (data) { // 医生提交处方单到缓存库
+  return axios({
+    url: 'inquiresRxs/affirm',
     method: 'post',
     data: {...baseDate, 'data': data}
   })

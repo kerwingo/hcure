@@ -269,14 +269,16 @@ export default {
   z-index: 30;
   .panel {
     position: relative;
-    width: 1000px;
-    min-height: 700px;
+    width: 66%;
+    min-width: 300px;
+    max-width: 1000px;
+    min-height: 400px;
     padding: 20px;
     box-sizing: border-box;
     background-color: #F6F6F6;
     text-align: left;
     .title {
-      font-size:32px;
+      font-size:22px;
       font-weight:bold;
       color:rgba(51,51,51,1);
       line-height:55px;
@@ -284,21 +286,20 @@ export default {
     .search-wrap {
       display: flex;
       margin: 25px 0;
-      font-size: 22px;
+      font-size: 16px;
       justify-content: space-between;
       .input-wrap {
           width: calc(100% - 120px);
-          font-size: 20px;
         position: relative;
         .icon-search {
           position: absolute;
           left: 15px;
-          top: 15px;
+          top: 12px;
         }
         input{
           width: 100%;
-          height: 50px;
-          padding:0 20px 0 55px;
+          height: 40px;
+          padding:0 20px 0 50px;
           border: 0;
           box-shadow:0px 0px 16px 0px rgba(212,212,212,0.53);
           border-radius:3px;
@@ -306,7 +307,7 @@ export default {
       }
       .search-btn {
         width:100px;
-        height:50px;
+        height:40px;
         color: #fff;
         background:rgba(67,190,127,1);
         border-radius:3px;
@@ -315,14 +316,14 @@ export default {
       }
     }
     .result-wrap {
-      min-height: 400px;
+      min-height: 300px;
       .r-tit{
         color:rgba(170,170,170,1);
-        font-size: 22px;
+        font-size: 16px;
         margin-bottom: 30px;
       }
       .non-ideal{
-        min-height: 400px;
+        min-height: 300px;
         padding: 80px 0;
         display: flex;
         justify-content: center;
@@ -331,7 +332,7 @@ export default {
         box-sizing: border-box;
         .warn {
           margin-top: 60px;
-          font-size:22px;
+          font-size:16px;
           color:rgba(86,86,86,1);
           line-height:30px;
         }
@@ -341,7 +342,7 @@ export default {
         justify-content: center;
         align-items: start;
         padding:0 0 30px 0;
-        min-height: 400px;
+        min-height: 300px;
         box-sizing: border-box;
         .list{
           min-width: 70%;
@@ -350,13 +351,13 @@ export default {
             li {border:0}
           }
           li {
-            line-height: 80px;
-            height: 80px;
+            line-height: 50px;
+            height: 50px;
             text-align: center;
             border-bottom: 1px solid rgba(220,220,220,0.5);
             cursor: pointer;
             box-sizing: border-box;
-            font-size: 22px;
+            font-size: 16px;
             &:hover {
               background: linear-gradient(to right, #F6F6F6 ,#fff, #F6F6F6); /* 标准的语法 */
               box-shadow:0px 0px 16px 0px rgba(212,212,212,0.53);
@@ -366,7 +367,7 @@ export default {
         }
         table{
           vertical-align: middle;
-          font-size: 22px;
+          font-size: 16px;
           tr {
             background: #fff;
             cursor: pointer;
@@ -375,7 +376,7 @@ export default {
               background: #F6F6F6;
             }
             td{
-              line-height: 66px;
+              line-height: 40px;
               vert-align: middle !important;
             }
           }
@@ -392,8 +393,8 @@ export default {
     }
     .close {
       display: inline-block;
-      width: 40px;
-      height: 40px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
       overflow: hidden;
       background-image: url("../../static/img/close_2.png");

@@ -66,12 +66,13 @@ export default{
   .pagination {
     display: flex;
     justify-content: space-between;
+    font-size: 14px;
     .count{
       color: #565656;
       background:rgba(229,229,229,1);
       border-radius:3px;
-      height:50px;
-      line-height: 50px;
+      height:40px;
+      line-height: 40px;
       padding: 0 20px;
       box-sizing: border-box;
     }
@@ -80,8 +81,8 @@ export default{
       justify-content: center;
       span {
         display: inline-block;
-        height:50px;
-        line-height: 50px;
+        height:40px;
+        line-height: 40px;
         padding: 0 20px;
         box-sizing: border-box;
         color: #565656;

@@ -39,6 +39,13 @@ export function doctorInfo (data = {}) { // 获取医生基本信息
     data: {...baseDate, 'data': data}
   })
 }
+export function doctorIm (data = {}) { // 获取登录医生用户的环信账号信息
+  return axios({
+    url: 'doctor/talks/info',
+    method: 'post',
+    data: {...baseDate, 'data': data}
+  })
+}
 export function adeptInfo (data = {}) { // 医生擅长、简介、手写签名显示
   return axios({
     url: 'adeptInfo',

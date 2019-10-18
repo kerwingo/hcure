@@ -2,7 +2,7 @@
   <el-main>
     <div style="height: 480px;">
       <el-row style="height: 100%;">
-        <el-col :span="4" style="height: 100%;">
+        <!--<el-col :span="4" style="height: 100%;">
           <el-card style="height: 100%; text-align: left">
             <div class="chatting-roster-group-list">
               <span class="title">好友</span>
@@ -10,43 +10,38 @@
                 <li v-for="(roster, index) in rosterList" :key="index" @click="toChats(roster)">{{roster.name}}</li>
               </ul>
             </div>
-            <div class="chatting-roster-group-list">
-              <span class="title">群组</span>
-              <ul>
-                <li v-for="(group, index) in groupList" :key="index" @click="toChats(group)"> {{group.groupname}}</li>
-              </ul>
-            </div>
           </el-card>
-        </el-col>
+        </el-col>-->
         <!-- 聊天信息 -->
-        <el-col :span="20">
+        <el-col :span="24">
           <el-row>
             <el-col :span="24">
-              <div style="width: 100%; text-align: left;">
-                <span style="font-weight: 400">To => <span style="color: blue"> {{imTo.toName}} </span></span>
-              </div>
               <el-scrollbar v-on:scroll.native="scrollHandler"  ref="chattingContent" class="chatting-content">
                 <div v-for="(item, index) in charts" :key="index">
                   <div v-if="item.from" class="chatting-item clearfix" :class="item.className">
                     <div class="msg-date">
                       {{ item.timeStr }}
                     </div>
-                    <div class="msg-from">
+                    <!--<div class="msg-from">
                       <span class="msg-author">{{ item.from}}</span>
                       <img src="/static/img/im/kf-default.png" alt="">
-                    </div>
-                    <div class="msg-content">
-                      <Aplayer
-                        v-if="item.objectURL && item.fileType == 'audio'"
-                        mini
-                        :music="{
+                    </div>-->
+                    <div class="item-content">
+                      <div class="msg-content">
+                        <Aplayer
+                          v-if="item.objectURL && item.fileType == 'audio'"
+                          mini
+                          :music="{
                                src: item.objectURL
                               }"
-                      ></Aplayer>
-                      <Viewer v-if="item.url && item.fileType == 'image'" :images="[item.url]">
-                        <img :src="item.url" width="200px"/>
-                      </Viewer>
-                      <span v-if="item.sourceMsg" v-html="item.sourceMsg"></span>
+                        ></Aplayer>
+                        <Viewer v-if="item.url && item.fileType == 'image'" :images="[item.url]">
+                          <img :src="item.url" width="200px"/>
+                        </Viewer>
+                        <span v-if="item.sourceMsg" v-html="item.sourceMsg"></span>
+                      </div>
+                      <img src="/static/img/profile_portrait.png" class="sicker" alt="">
+                      <img src="/static/img/profile_portrait_1.png" class="doctor" alt="">
                     </div>
                   </div>
                 </div>
@@ -54,20 +49,20 @@
             </el-col>
           </el-row>
           <!-- 输入区域 -->
-          <el-row>
+          <el-row class="">
             <el-col :span="24">
               <div class="chatting-input">
-                <el-input type="textarea" @keyup.enter.native="sendMessage" ref="textarea" v-model.trim="txt"></el-input>
+                <el-input type="textarea"  @keyup.enter.native="sendMessage" ref="textarea" v-model.trim="txt"></el-input>
               </div>
             </el-col>
           </el-row>
-          <el-row>
-            <el-col :span="5" style="text-align: center">
+          <el-row class="enterArea">
+            <el-col :span="4" style="text-align: center">
               <label class="chatting-btn-file">
                 <input :disabled="!imTo.toName" @change="sendImageMessage($event)" ref="imageInput"
                        type="file"
                        multiple="false">
-                <el-button :disabled="!imTo.toName" type="success" style="margin-top: 5px;">上传图片</el-button>
+                <el-button :disabled="!imTo.toName" type="success" style="margin-top: 5px;" v-show="false">上传图片</el-button>
               </label>
             </el-col>
             <el-col :span="5" style="text-align: center">
@@ -84,10 +79,19 @@
 import Viewer from '@/components/Common/Viewer'
 import Easemob from '@/utils/Easemob'
 import {mapGetters} from 'vuex'
+import {
+  doctorIm
+} from '@/axios/api'
 export default {
   name: 'Im',
   components: {
     Viewer
+  },
+  props: {
+    sicker: {
+      type: Object,
+      default: null
+    }
   },
   data () {
     return {
@@ -136,20 +140,49 @@ export default {
   watch: {
     charts (val, oldVal) {
       this.scrollToBottom()
+    },
+    sicker: {
+      handler: function (val, oldVal) {
+        this.imTo = {
+          chatType: 'single',
+          toId: val.userIm,
+          toName: val.userIm
+        }
+        console.log('im', val)
+      },
+      deep: true
+    },
+    imId (val) {
+      this.imTo = {
+        chatType: 'single',
+        toId: val,
+        toName: val
+      }
     }
   },
   methods: {
     initIm () {
       // im 登陆
-      this.im.login('123456xlk', '123456')
+      this.im.login('user_26010', 'EASEMOB_PASSWORD')
+
+      doctorIm().then(
+        res => {
+          this.im.login(res.data.data.doctorIm, res.data.data.doctorImPwd)
+          // this.im.login('user_26010', 'EASEMOB_PASSWORD')
+        }
+      )
     },
     // 发送消息
-    sendMessage () {
+    sendMessage (address) {
       if (this.imTo.chatType === 'single') {
         // 会话
-        this.im.sendTextMessage(this.txt, this.imTo.toId, () => {
-          this.txt = ''
-        })
+        if (address) {
+          this.im.sendTextMessage(address, this.imTo.toId)
+        } else {
+          this.im.sendTextMessage(this.txt, this.imTo.toId, () => {
+            this.txt = ''
+          })
+        }
       } else {
         // 组
         this.im.sendTextMessageGroup(this.txt, this.imTo.toId, () => {
@@ -213,9 +246,20 @@ export default {
   }
 
   .el-main {
-    background-color: #E9EEF3;
+    background-color: #DFE6EA;
     color: #333;
     text-align: center;
+    padding: 0;
+  }
+  .enterArea {
+    background: #fff;
+    padding: 20px 0 30px 0;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .el-button--success {
+    background-color: #43BE7F;
+    border: 0;
   }
 
 </style>

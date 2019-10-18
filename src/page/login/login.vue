@@ -1,7 +1,7 @@
 <template>
   <div class="login_box">
     <div class="login-content">
-      <h1 class="b-title">欢迎使用享乐康医生后台管理系统</h1>
+      <h1 class="b-title">享乐康医生管理系统</h1>
       <el-form
         :model="ruleForm2"
         :rules="rules2"
@@ -57,103 +57,108 @@
  * @date 2019/9/16
  * @annotation：登录页面
  */
-import {login} from "@/axios/api";
+import {login} from '@/axios/api'
 export default {
-  name: "login",
-  data: function() {
+  name: 'login',
+  data: function () {
     return {
       logining: false,
       ruleForm2: {
-        account: "",
-        checkPass: ""
+        account: '',
+        checkPass: ''
       },
       rules2: {
-        account: [{ required: true, message: "请输入账号", trigger: "blur" }],
-        checkPass: [{ required: true, message: "请输入密码", trigger: "blur" }]
+        account: [{ required: true, message: '请输入账号', trigger: 'blur' }],
+        checkPass: [{ required: true, message: '请输入密码', trigger: 'blur' }]
       },
       checked: false,
       type: true
-    };
+    }
   },
   watch: {
-    "ruleForm2.account": function(i) {
-      this.logining = false;
+    'ruleForm2.account': function (i) {
+      this.logining = false
     },
-    "ruleForm2.checkPass": function(i) {
-      this.logining = false;
+    'ruleForm2.checkPass': function (i) {
+      this.logining = false
     }
   },
   methods: {
-    remember() {
-      let name = this.ruleForm2.account;
-      let pass = this.ruleForm2.checkPass;
+    remember () {
+      let name = this.ruleForm2.account
+      let pass = this.ruleForm2.checkPass
       if (this.checked) {
-        this.clearCookie();
+        this.clearCookie()
       } else {
-        this.setCookie(name, pass, 7);
+        this.setCookie(name, pass, 7)
       }
     },
-    eye() {
-      this.type = !this.type;
+    eye () {
+      this.type = !this.type
     },
     // 设置cookie
-    setCookie(c_name, c_pwd, exdays) {
-      var exdate = new Date(); // 获取时间
-      exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays); // 保存的天数
+    setCookie (c_name, c_pwd, exdays) {
+      var exdate = new Date() // 获取时间
+      exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays) // 保存的天数
       // 字符串拼接cookie
       window.document.cookie =
-        "userName" + "=" + c_name + ";path=/;expires=" + exdate.toGMTString();
+        'userName' + '=' + c_name + ';path=/;expires=' + exdate.toGMTString()
       window.document.cookie =
-        "userPwd" + "=" + c_pwd + ";path=/;expires=" + exdate.toGMTString();
+        'userPwd' + '=' + c_pwd + ';path=/;expires=' + exdate.toGMTString()
     },
     // 读取cookie
-    getCookie: function() {
+    getCookie: function () {
       if (document.cookie.length > 0) {
-        let arr = document.cookie.split("; "); // 这里显示的格式需要切割一下自己可输出看下
+        let arr = document.cookie.split('; ') // 这里显示的格式需要切割一下自己可输出看下
         for (let i = 0; i < arr.length; i++) {
-          let arr2 = arr[i].split("="); // 再次切割
+          let arr2 = arr[i].split('=') // 再次切割
           // 判断查找相对应的值
-          if (arr2[0] == "userName") {
-            this.checked = true;
-            this.ruleForm2.account = arr2[1]; // 保存到保存数据的地方
-          } else if (arr2[0] == "userPwd") {
-            this.ruleForm2.checkPass = arr2[1];
+          if (arr2[0] == 'userName') {
+            this.checked = true
+            this.ruleForm2.account = arr2[1] // 保存到保存数据的地方
+          } else if (arr2[0] == 'userPwd') {
+            this.ruleForm2.checkPass = arr2[1]
           }
         }
       }
     },
     // 清除cookie
-    clearCookie: function() {
-      this.setCookie("", "", -1); // 修改2值都为空，天数为负1天就好了
+    clearCookie: function () {
+      this.setCookie('', '', -1) // 修改2值都为空，天数为负1天就好了
     },
     // 请求登录接口
-    handleSubmit2(ev) {
+    handleSubmit2 (ev) {
+      console.log('ref', this.$refs.ruleForm2.$children)
       this.$refs.ruleForm2.validate(valid => {
         if (valid) {
-          this.logining = true;
+          this.logining = true
           let params = {
             username: this.ruleForm2.account,
             password: this.ruleForm2.checkPass
-          };
+          }
           login(params).then(res => {
-            this.logining = false;
-            sessionStorage.setItem("token", res.data.data.access);
-            sessionStorage.setItem("enable", res.data.data.subject.enable);
-            let token = window.sessionStorage.getItem("token");
+            this.logining = false
+            sessionStorage.setItem('token', res.data.data.access)
+            sessionStorage.setItem('enable', res.data.data.subject.enable)
+            let token = window.sessionStorage.getItem('token')
             if (token) {
-              this.$router.push({ path: "/main" });
+              this.$router.push({ path: '/main' })
             }
-          });
+          }).catch(
+            setTimeout(() => {
+              this.logining = false
+            }, 1000 * 5)
+          )
         } else {
-          return false;
+          return false
         }
-      });
+      })
     }
   },
-  mounted() {
-    this.getCookie();
+  mounted () {
+    this.getCookie()
   }
-};
+}
 </script>
 <style lang="less">
 .login_box .login-container {

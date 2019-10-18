@@ -24,7 +24,18 @@
           <th>结束情况</th>
           <th>处方笺</th>
         </tr>
-        <tr v-for="(item, index) in list" :key="index" v-loading="loading"  :class="{'online':item.enquiry===0}">
+        <tr  v-loading="loading" >
+          <td><i class="el-icon-time"  style="position: relative;left: -20px"></i></td>
+          <td>军权</td>
+          <td>男</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>
+            <el-button title="查看" type="success" size="mini" plain  icon="" @click="openChat({'userIm':'doctor_44','closed':2})">查看</el-button>
+          </td>
+        </tr>
+        <tr v-for="(item, index) in list" :key="index" v-loading="loading"  :class="[{'online':item.enquiry===0},{'checking':item.enquiry===1}]">
           <td><i class="el-icon-time" v-if="item.enquiry===0" style="position: relative;left: -20px"></i>{{item.buildtime | dateFormatter }}</td>
           <td>{{item.caption}}</td>
           <td>{{item.sex===0?'男':'女'}}</td>
@@ -32,7 +43,7 @@
           <td>{{item.enquiry | enquiry(item.enquiry)}}</td>
           <td>{{item.closed | isClosed}}</td>
           <td>
-            <el-button title="查看" type="success" size="mini" plain  icon="" @click="openChat(item)">查看</el-button>
+            <el-button title="查看" type="success" size="mini" plain  icon="" @click="openChat(item)" >查看</el-button>
           </td>
         </tr>
       </table>
@@ -43,7 +54,9 @@
              v-show="list.length"
              :pagesize="pageSize"
              @handleSizeChange="handleSizeChange"
-             @handleCurrentChange="handleCurrentChange"></pages>
+             @handleCurrentChange="handleCurrentChange"
+             style="margin-bottom: 30px"
+      ></pages>
     <div class="dialog-wrap" v-show="dialogVisible">
       <div class="dialog" >
         <chatbox @closeDialog = "closeDialog" :sicker="sicker"></chatbox>
@@ -111,10 +124,12 @@ export default {
     isClosed: function (val) {
       switch (val) {
         case 0:
-          return '未结束'
+          return '未开始'
         case 1:
-          return '已结束'
+          return '未结束'
         case 2:
+          return '已结束'
+        case 3:
           return '忽略'
       }
     },
@@ -132,9 +147,11 @@ export default {
     },
     freshInquire () {
       setInterval(() => {
-        this.offset = 0
-        this.inquire()
-      }, 1000 * 30)
+        if (this.searchName === '' || this.searchName === null) {
+          this.offset = 0
+          this.inquire()
+        }
+      }, 1000 * 60)
     },
     inquire () {
       this.loading = true
@@ -168,13 +185,17 @@ export default {
       this.sicker = sicker
       this['SET_SICKER'](sicker) // 保存到store
       if (sicker.enquiry === 0) {
-        inquiresOpen({'id': sicker.gid}).then(res => {})
+        inquiresOpen({'id': sicker.gid}).then(res => {
+          this.inquire()
+        })
       }
     },
     closeDialog (val) {
       if (val !== 'collapse') {
-        if (this.sicker.closed === 0) {
-          inquiresClose({'id': this.gid}).then(res => {})
+        if (this.sicker.closed === 1) {
+          inquiresClose({'id': this.sicker.gid}).then(res => {
+            this.inquire()
+          })
         }
       }
       this.dialogVisible = false
@@ -243,6 +264,8 @@ export default {
       }
       .el-button{
         margin-left: 20px;
+        background-color: #43BE7F;
+        color: #fff;
       }
     }
   }
@@ -268,6 +291,16 @@ export default {
       &.online {
         color: #E71A1A;
       }
+      &.checking{
+        .el-button--success.is-plain{
+          color: #fff;
+          background: #43BE7F;
+          border-color: #43BE7F;
+          &:hover {
+            opacity: 0.8;
+          }
+        }
+      }
     }
   }
   .dialog-wrap {
@@ -280,6 +313,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 2001;
     .dialog{
         background: #fff;
       overflow: hidden;

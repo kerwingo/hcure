@@ -2,13 +2,13 @@
   <div>
     <div class="chatBox">
       <div class="chatBox-head">
-        <p>{{name}}</p>
+        <p><span style="position: relative;left: -80px">{{name}}</span></p>
         <span class="collapse" v-show="true" @click="closeDialog('collapse')"></span>
         <span class="close" v-show="closeDialog" @click="closeDialog"></span>
       </div>
       <div class="chatBox-main">
         <div class="main-box">
-          <im></im>
+          <im :sicker="sicker" ref="im"></im>
         </div>
         <div class="aside-box">
           <div class="history disabled" @click="openInnerDialog('check')">
@@ -19,7 +19,7 @@
             <img src="@/static/img/location.png" alt="">
             <p>位置</p>
           </div>
-          <div class="add" @click="openInnerDialog('add')">
+          <div v-if="sicker" class="add" @click="openInnerDialog('add')" :class="{'disabled':sicker.closed===2}">
             <img src="@/static/img/prescription.png" alt="">
             <p>添加处方笺</p>
           </div>
@@ -86,6 +86,7 @@ export default {
       this.$emit('closeDialog', val)
     },
     openInnerDialog (val) {
+      if (val === 'check' || this.sicker.closed === 2) return
       this.types = val
       this.innerDialogVisible = true
       this.$refs.pres.clearData()
@@ -97,34 +98,10 @@ export default {
       this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1)
     },
     sendAddress () {
-      const h = this.$createElement
-      this.$msgbox({
-        title: '消息',
-        message: h('p', null, [
-          h('span', null, '确认发送地址给患者吗？'),
-          h('i', { style: 'color: teal' })
-        ]),
-        showCancelButton: true,
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        beforeClose: (action, instance, done) => {
-          if (action === 'confirm') {
-            instance.confirmButtonLoading = true
-            instance.confirmButtonText = '发送中...'
-            address().then(res => {
-              console.log('address', res.data.data.address)
-              instance.confirmButtonLoading = false
-              done()
-            })
-          } else {
-            done()
-          }
-        }
-      }).then(action => {
-        /* this.$message({
-          type: 'info',
-          message: 'action: ' + action
-        }) */
+      address().then(res => {
+        console.log('address', res.data.data.address)
+        console.log(this.$refs.im)
+        this.$refs.im.sendMessage('haha')
       })
     }
   }
@@ -171,18 +148,18 @@ export default {
       display: flex;
       justify-content: flex-start;
       .main-box{
-        width: 800px;
+        width: 700px;
       }
       .aside-box{
-        width: 200px;
+        width: 170px;
         padding-top: 40px;
         box-shadow:0px 0px 13px 0px rgba(223,230,234,0.57);
         &>div{
           margin-bottom: 60px;
           cursor: pointer;
           &.disabled {
-            pointer-events: none;
-            cursor: url('../../../static/img/disabled.jpg'),auto;
+            cursor:no-drop;
+            /*pointer-events: none;*/
             opacity: 0.7;
           }
           p{

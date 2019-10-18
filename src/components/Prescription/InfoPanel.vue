@@ -1,7 +1,7 @@
 <template>
   <div class="panel-wrap" v-show="panelShow">
       <div class="panel">
-          <h3 class="title">{{tit1}} <span style="font-size: 22px;color: rgba(86,86,86,1);font-weight: normal;margin-left: 15px">{{tit2}}</span></h3>
+          <h3 class="title">{{tit1}} <span style="font-size: 16px;color: rgba(86,86,86,1);font-weight: normal;margin-left: 15px">{{tit2}}</span></h3>
           <span class="close" @click="displayPanel(false)"></span>
           <div class="search-wrap">
             <div class="input-wrap">
@@ -303,6 +303,7 @@ export default {
           border: 0;
           box-shadow:0px 0px 16px 0px rgba(212,212,212,0.53);
           border-radius:3px;
+          font-size: 16px;
         }
       }
       .search-btn {

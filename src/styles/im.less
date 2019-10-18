@@ -63,8 +63,16 @@
   height: 400px;
   flex: 1;
   width: 100%;
-  background-color: rgba(39, 176, 255, 0.1);
-  overflow: auto;
+  background-color: #DFE6EA;
+  overflow: hidden;
+  .el-scrollbar__wrap{
+    overflow: hidden;
+    overflow-y: scroll;
+  }
+  .el-scrollbar__view {
+    padding: 10px;
+    box-sizing: border-box;
+  }
   .chatting-item {
     padding: 10px;
     width: 100%;
@@ -91,13 +99,36 @@
         border-radius: 15px;
       }
     }
+    .item-content{
+      display: flex;
+      align-items: center;
+      padding-top: 10px;
+    }
     .msg-content {
       margin-top: 5px;
       background-color: white;
-      width: 220px;
-      padding: 6px 10px;
-      border-radius: 10px;
+      max-width: 240px;
+      min-width: 50px;
+      padding: 15px 15px;
+      box-shadow:0px 1px 7px 0px rgba(0, 0, 0, 0.1);
+      border-radius:9px;
       text-align: left;
+      word-wrap: break-word;
+      word-break: break-all;
+      position: relative;
+      line-height: 24px;
+      &:before{
+        content: "";
+        display: inline-block;
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-top: 6px solid transparent;
+        border-right:8px solid #fff;
+        border-bottom:6px solid transparent;
+        left: -8px;
+        top: calc(50% - 8px);
+      }
     }
   }
 
@@ -107,18 +138,48 @@
   .in {
     .msg-from {
       display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      img {
+        margin-left: 10px;
+      }
+    }
+    .item-content{
+      justify-content: flex-end;
+      flex-direction:row-reverse;
+    }
+    .msg-content {
+      float: left;
+      margin-left: 20px;
+      justify-content: revert;
+    }
+    .doctor{
+      display: none;
+    }
+  }
+  .out {
+    .msg-from {
+      display: flex;
       justify-content: flex-end;
       align-items: center;
       img {
         margin-left: 10px;
       }
     }
-
+    .item-content{
+      justify-content: flex-end;
+    }
     .msg-content {
       float: right;
-      word-wrap: break-word;
-      word-break: break-all;
-      margin-right: 10px;
+      margin-right: 20px;
+      &:before{
+        left: auto;
+        right: -8px;
+        transform: rotate(180deg);
+      }
+    }
+    .sicker{
+      display: none;
     }
   }
 
@@ -136,7 +197,6 @@
         margin-right: 10px;
       }
     }
-
     .msg-content {
       float: left;
       margin-left: 10px;
@@ -157,6 +217,10 @@
 }
 
 .chatting-input {
+  .el-textarea__inner {
+    border: 0;
+    padding: 20px;
+  }
 }
 
 .chatting-btn-file {

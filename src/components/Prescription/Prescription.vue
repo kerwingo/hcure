@@ -311,9 +311,9 @@
         </div>
       </div>
       <div class="operation">
-        <span class="cancel" @click="cancel" v-show="isAdd">取消</span>
-        <span class="o-close" @click="cancel" v-show="!isAdd">关闭</span>
-        <span class="print" @click="goPrint" v-show="isAdd">确定并打印</span>
+        <el-button class="cancel" @click="cancel" v-show="isAdd">取消</el-button>
+        <el-button class="o-close" @click="cancel" v-show="!isAdd">关闭</el-button>
+        <el-button class="print" @click="goPrint" v-show="isAdd" :loading="goPrint_loading">确定并打印</el-button>
       </div>
       <InfoPanel ref="InfoPanel" @addItem="addItem" ></InfoPanel>
     </div>
@@ -367,22 +367,38 @@ export default {
     },
     tcmList: function () {
       var arr = []
-      var new_arr = []
       this.tcmData.forEach(function (items) {
         items.forEach(function (item) {
           arr.push(item)
         })
       })
-      new_arr = arr.map(o => {
+      return arr
+    },
+    newList: function () {
+      var arr = []
+      arr = this.tcmList.map(o => {
         return {
-          itemid: o.id,
-          title: o.drugName,
-          amount: o.amount,
-          price: o.price,
-          total: o.total
+          id: o.id,
+          title: o.drugName === null ? '' : o.drugName,
+          amount: o.num === null ? 0 : o.num,
+          price: o.price === null ? 0 : o.price,
+          total: o.totalMoney === null ? 0 : o.totalMoney,
+          category: '',
+          course: '',
+          dose: '',
+          doseunit: '',
+          dropspeed: '',
+          formId: '',
+          formName: '',
+          genfreq: '',
+          itemunit: '',
+          link: '',
+          returned: 0,
+          spec: '',
+          way: ''
         }
       })
-      return new_arr
+      return arr
     }
   },
   watch: {
@@ -473,7 +489,8 @@ export default {
           date: '2019-4-02 10:41:35',
           text: '感冒-（上呼吸道感染）（临床诊断）'
         }
-      ]
+      ],
+      goPrint_loading: false
     }
   },
   mounted () {
@@ -607,6 +624,8 @@ export default {
           if (Number(res.data.category) !== 2) {
             this.nowIndex = res.data.category
           }
+        } else {
+          this.nowIndex = 0
         }
         console.log(this.doctorCategory)
       })
@@ -631,13 +650,14 @@ export default {
       this.saveRxs()
     },
     saveRxs () { // 保存处方
+      this.goPrint_loading = true
       let data = {
         sickid: this.sicker.sickid,
         doctorid: '',
         inquireid: this.sicker.gid,
         content: this.symptoms,
         diagslist: this.diagslist,
-        medicineslist: this.nowIndex === 0 ? this.westernData : this.tcmList,
+        medicineslist: this.nowIndex === 0 ? this.westernData : this.newList,
         vice: this.c_fs,
         mea: this.c_ycyy,
         freq: this.c_pc,
@@ -647,10 +667,13 @@ export default {
       }
       saveRxs(data).then(res => {
         console.log('处方缓存成功', res)
+        this.goPrint_loading = false
         this.cacheData = res.data.data
         this.prescription = false
         this.checkSend = true
-      })
+      }).catch(
+        this.goPrint_loading = false
+      )
     },
     cancel () {
       this.$emit('closeInnerDialog')
@@ -904,7 +927,9 @@ export default {
 .operation {
   padding: 35px 0 40px 0;
   font-size: 14px;
-  span {
+  display: flex;
+  justify-content: center;
+  button {
     display: inline-block;
     height:50px;
     line-height: 50px;
@@ -914,6 +939,7 @@ export default {
     cursor: pointer;
     padding: 0 20px;
     margin: 0 15px;
+    border: 0;
     &.cancel{
       color: #565656;
       background:rgba(229,229,229,1);
@@ -921,6 +947,12 @@ export default {
     &.print{
       color: #fff;
       background:rgba(67,190,127,1);
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      .el-icon-loading {
+        margin-left: 10px;
+      }
     }
     &.o-close{
       color: #fff;

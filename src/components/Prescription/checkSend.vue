@@ -78,11 +78,11 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="(tr,index) in items.list" :key="'tcmtable'+index" style="background: #f6f6f6">
-                  <td>{{tr.drugName}}</td>
-                  <td>{{tr.num}}</td>
+                <tr v-for="(tr,index) in items" :key="'tcmtable'+index" style="background: #f6f6f6">
+                  <td>{{tr.itemname}}</td>
+                  <td>{{tr.amount}}</td>
                   <td>{{tr.price}}</td>
-                  <td>{{tr.totalMoney}}</td>
+                  <td>{{tr.total}}</td>
                 </tr>
                 </tbody>
               </table>
@@ -107,9 +107,9 @@
         <div id="printBox" class="print-box" v-show="true"></div>
       </div>
       <div class="operation">
-          <span class="cancel" @click="reWrite">返回修改</span>
-          <span style="background-color: gold;" class="print" @click="send('print')">打印并发送患者</span>
-          <span class="print" @click="send('send')">发送患者</span>
+          <button class="cancel" :class="{'disabled':success}" @click="reWrite" :disabled="success">返回修改</button>
+          <button style="background-color: #FFC956;" :class="{'disabled':success}" class="print" @click="send('print')" :disabled="success">打印并发送患者</button>
+          <button class="print" @click="send('send')" :class="{'disabled':success}" :disabled="success">发送患者</button>
       </div>
   </div>
 </template>
@@ -145,6 +145,7 @@ export default {
   },
   data () {
     return {
+      success: false,
       data: {
         amount: 1,
         cacherxsid: '4cf2bfa740324f4ea41330d60dc70fab',
@@ -390,6 +391,15 @@ export default {
         '  padding: 15px 0;\n' +
         '  font-size: 14px;\n' +
         '}' +
+        '.prescription .tcm {\n' +
+        '  clear: both;\n' +
+        '  overflow: hidden;\n' +
+        '}\n' +
+        '.prescription .table.tcmtable  {\n' +
+        '  width: calc((100% - 30px) / 3);\n' +
+        '  margin: 0 5px;\n' +
+        '  float: left;\n' +
+        '}' +
         '.prescription .notice {\n' +
         '  display: flex;\n' +
         '  justify-content: start;\n' +
@@ -424,19 +434,19 @@ export default {
             })
           }
         ) */
-        commitRxs({'id': this.data.cacherxsid}).then(res => {
-          if (res.data.code === 200) {
-            alert('发送成功')
-          }
-        })
+        this.commitRxs()
         this.printHtmlCustomStyle()
       } else {
-        commitRxs({'id': this.data.cacherxsid}).then(res => {
-          if (res.data.code === 200) {
-            alert('发送成功')
-          }
-        })
+        this.commitRxs()
       }
+    },
+    commitRxs () {
+      commitRxs({'id': this.data.cacherxsid}).then(res => {
+        if (res.data.code === 200) {
+          this.success = true
+          alert('发送成功')
+        }
+      })
     }
   }
 
@@ -536,9 +546,14 @@ export default {
   padding: 15px 0;
   font-size: 14px;
 }
+.prescription .tcm {
+  clear: both;
+  overflow: hidden;
+}
 .prescription .table.tcmtable  {
-  width: calc((100% - 30px)/3);
+  width: calc((100% - 30px) / 3);
   margin: 0 5px;
+  float: left;
 }
 
 .prescription .notice {
@@ -554,7 +569,7 @@ export default {
 }
 .operation {
   padding: 35px 0 40px 0;
-  span {
+  button {
     display: inline-block;
     height:40px;
     line-height: 40px;
@@ -564,6 +579,7 @@ export default {
     cursor: pointer;
     margin: 0 15px;
     font-size: 14px;
+    border: 0;
     &.cancel{
       color: #565656;
       background:rgba(229,229,229,1);
@@ -571,6 +587,10 @@ export default {
     &.print{
       color: #fff;
       background:rgba(67,190,127,1);
+    }
+    &.disabled{
+      opacity: 0.7;
+      cursor: no-drop;
     }
   }
 }

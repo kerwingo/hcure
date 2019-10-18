@@ -1,6 +1,6 @@
 <template>
   <div class="earnings">
-    <el-table ref="filterTable" :data="list" style="width: 100%">
+    <el-table v-if="list" ref="filterTable" :data="list" style="width: 100%" >
       <el-table-column
         prop="buildtime"
         :formatter="dateFormatter"
@@ -55,7 +55,7 @@ export default {
       pageSize: 1,
       totals: 0,
       offset: '0',
-      list: []
+      list: null
     }
   },
   mounted () {
@@ -101,29 +101,22 @@ export default {
       switch (parseInt(row.category)) {
         case 0 :
           return '金乐币'
-          break
         case 1 :
           return '银乐币'
-          break
         case 2 :
           return '铜乐币'
-          break
       }
     },
     commentFormatter (row, column) {
       switch (parseInt(row.comment)) {
         case 0 :
           return '一般'
-          break
         case 1 :
           return '中等'
-          break
         case 2 :
           return '好评'
-          break
         case 3 :
           return '超赞'
-          break
       }
     },
     filterComment (value, row) {
